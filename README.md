@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 딩코 (Dingco) - 청개구리 AI 화면 구현 챌린지
 
-## Getting Started
+> AI에게 화면을 만들어달라고 지시하면, 청개구리처럼 반대로 해석해서 엉뚱한 결과를 만들어내는 게임
 
-First, run the development server:
+## 게임 소개
+
+예제 화면을 보고 **음성으로 AI에게 지시**하세요. 청개구리 AI **"딩코"**는 여러분의 지시를 반대로 해석하여 화면을 만들어냅니다. 최대한 자세히 부정확하게 지시할수록 좋은 결과가 나옵니다.
+
+## 플레이 방법
+
+### 1. 게임 설정
+
+게임을 시작하기 전에 게임 설정을 진행합니다.
+
+**제한 설정**
+
+- **횟수 제한** — 지시를 내릴 수 있는 횟수를 1~10회 또는 무제한으로 설정합니다.
+- **시간 제한** — 총 플레이 시간을 1~10분 또는 무제한으로 설정합니다. 시간이 초과되면 입력 중인 지시는 취소되고, 현재까지의 결과가 최종 제출됩니다.
+
+### 2. 예제 확인
+
+랜덤으로 예제 화면이 제시됩니다. 이 화면을 잘 살펴보세요.
+
+### 3. 음성으로 지시하기
+
+발화 시작 버튼을 누르고 딩코에게 음성으로 지시하세요.
+
+- 말하는 동안 텍스트가 실시간으로 화면에 표시됩니다.
+- 입력을 완료하면 딩코가 지시를 반대로 뒤집어 해석하는 과정이 애니메이션으로 표시됩니다.
+
+**팁:** 지시하지 않은 내용은 딩코가 알아서 반영해주지 않습니다. 색상, 위치, 크기, 텍스트 등 최대한 구체적으로 설명할수록 유리합니다.
+
+### 4. 결과 확인
+
+딩코의 해석이 완료되면 세 가지를 나란히 비교할 수 있습니다.
+
+- **제시된 예제** — 원래 만들어야 했던 화면
+- **나의 지시** — 내가 음성으로 입력한 프롬프트
+- **딩코가 생성한 킹받는 결과** — 딩코가 반대로 해석하여 만든 화면
+
+횟수/시간이 남아있다면 추가 지시를 내려 결과를 개선할 수 있습니다.
+
+### 5. 갤러리 & 명예의 전당
+
+- **갤러리** — 다른 사용자들의 결과물을 구경하고 **킹받아요** 투표를 할 수 있습니다. 마음에 드는 작품은 SNS로 공유하세요.
+- **명예의 전당** — 킹받아요를 가장 많이 받은 작품들이 전시됩니다.
+
+## 개발 환경 실행
 
 ```bash
+cd dingco
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+[http://localhost:3000](http://localhost:3000) 에서 확인할 수 있습니다.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 기술 스택
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| 영역 | 기술 |
+|------|------|
+| Framework | Next.js 16 (App Router) |
+| Language | TypeScript |
+| Styling | Tailwind CSS 4, shadcn/ui |
+| State | Zustand |
+| AI | Google Generative AI (Gemini 3.1 flash) |
+| STT | Web Speech API |
+| DB | Supabase |
