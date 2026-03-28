@@ -59,7 +59,7 @@ export default function GalleryPage() {
   const totalVotes = entries.reduce((s, e) => s + e.vote_count, 0);
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0e0e0f", color: "#fff" }}>
+    <div className="flex flex-col" style={{ backgroundColor: "#0e0e0f", color: "#fff", minHeight: "100vh", overflowY: "auto", height: "100vh" }}>
       {/* Header */}
       <header className="flex items-center justify-between px-8 h-16 shrink-0 sticky top-0 z-10" style={{ backgroundColor: "#131314", borderBottom: "1px solid rgba(72,72,73,0.15)" }}>
         <button
