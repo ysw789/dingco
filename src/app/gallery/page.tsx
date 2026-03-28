@@ -94,10 +94,7 @@ export default function GalleryPage() {
         <button
           onClick={() => router.push("/ranking")}
           className="flex items-center gap-2 text-sm font-bold transition-colors"
-          style={{
-            color: "#8ff5ff",
-            fontFamily: "var(--font-space-grotesk)",
-          }}
+          style={{ color: "#bf81ff", fontFamily: "var(--font-space-grotesk)" }}
         >
           <span className="material-symbols-outlined text-[18px]">
             leaderboard
@@ -121,10 +118,9 @@ export default function GalleryPage() {
             className="px-4 py-1.5 text-xs font-bold tracking-widest uppercase transition-all"
             style={{
               fontFamily: "var(--font-space-grotesk)",
-              color: filter === f ? "#005d63" : "#767576",
-              backgroundColor: filter === f ? "#8ff5ff" : "transparent",
-              border:
-                filter === f ? "none" : "1px solid rgba(72,72,73,0.2)",
+              color: filter === f ? "#ffffff" : "#767576",
+              background: filter === f ? "linear-gradient(135deg, #bf81ff, #e879f9)" : "transparent",
+              border: filter === f ? "none" : "1px solid rgba(72,72,73,0.2)",
               borderRadius: "6px",
             }}
           >

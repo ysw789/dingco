@@ -155,14 +155,14 @@ function GameContent() {
   };
 
   const timerColor =
-    timeLeft <= 10 ? "#ff4d4d" : timeLeft <= 30 ? "#ffb84d" : "#8ff5ff";
+    timeLeft <= 10 ? "#ff4d4d" : timeLeft <= 30 ? "#ffb84d" : "#bf81ff";
 
   const timerGlow =
     timeLeft <= 10
       ? "0 0 30px rgba(255,77,77,0.5)"
       : timeLeft <= 30
       ? "0 0 30px rgba(255,184,77,0.3)"
-      : "0 0 30px rgba(143,245,255,0.3)";
+      : "0 0 30px rgba(191,129,255,0.4)";
 
   const mins = String(Math.floor(timeLeft / 60)).padStart(2, "0");
   const secs = String(timeLeft % 60).padStart(2, "0");
@@ -203,7 +203,12 @@ function GameContent() {
         <div className="text-center space-y-6">
           <span
             className="material-symbols-outlined text-6xl block"
-            style={{ color: "#8ff5ff" }}
+            style={{
+              background: "linear-gradient(135deg, #bf81ff, #f472b6)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}
           >
             check_circle
           </span>
@@ -221,10 +226,11 @@ function GameContent() {
               onClick={() => router.push("/gallery")}
               className="px-6 py-3 text-sm font-bold tracking-widest uppercase"
               style={{
-                backgroundColor: "#8ff5ff",
-                color: "#005d63",
+                background: "linear-gradient(135deg, #bf81ff 0%, #e879f9 50%, #f472b6 100%)",
+                color: "#ffffff",
                 fontFamily: "var(--font-space-grotesk)",
                 borderRadius: "8px",
+                boxShadow: "0 0 20px rgba(191,129,255,0.3)",
               }}
             >
               갤러리 보기
@@ -264,13 +270,13 @@ function GameContent() {
           <div
             className="w-7 h-7 rounded-full flex items-center justify-center"
             style={{
-              backgroundColor: "rgba(143,245,255,0.1)",
-              border: "1px solid rgba(143,245,255,0.2)",
+              backgroundColor: "rgba(191,129,255,0.1)",
+              border: "1px solid rgba(191,129,255,0.25)",
             }}
           >
             <span
               className="material-symbols-outlined text-[14px]"
-              style={{ color: "#8ff5ff" }}
+              style={{ color: "#bf81ff" }}
             >
               person
             </span>
@@ -312,10 +318,11 @@ function GameContent() {
           disabled={!code || isSubmitting}
           className="flex items-center gap-2 px-5 py-2 text-xs font-bold tracking-widest uppercase transition-all hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed"
           style={{
-            backgroundColor: "#8ff5ff",
-            color: "#005d63",
+            background: "linear-gradient(135deg, #bf81ff 0%, #e879f9 60%, #f472b6 100%)",
+            color: "#ffffff",
             fontFamily: "var(--font-space-grotesk)",
             borderRadius: "6px",
+            boxShadow: "0 0 16px rgba(191,129,255,0.35)",
           }}
         >
           <span className="material-symbols-outlined text-[16px]">upload</span>
@@ -340,17 +347,17 @@ function GameContent() {
           >
             <div
               className="flex items-center gap-2 px-3 h-full"
-              style={{ borderBottom: "2px solid #8ff5ff" }}
+              style={{ borderBottom: "2px solid #bf81ff" }}
             >
               <span
                 className="material-symbols-outlined text-[14px]"
-                style={{ color: "#8ff5ff" }}
+                style={{ color: "#bf81ff" }}
               >
                 html
               </span>
               <span
                 className="text-[11px]"
-                style={{ color: "#8ff5ff", fontFamily: "var(--font-space-grotesk)" }}
+                style={{ color: "#bf81ff", fontFamily: "var(--font-space-grotesk)" }}
               >
                 index.html
               </span>
@@ -431,16 +438,16 @@ function GameContent() {
               style={{
                 backgroundColor: isRecording
                   ? "rgba(255,77,77,0.15)"
-                  : "rgba(143,245,255,0.1)",
+                  : "rgba(191,129,255,0.1)",
                 border: isRecording
                   ? "1px solid rgba(255,77,77,0.4)"
-                  : "1px solid rgba(143,245,255,0.3)",
+                  : "1px solid rgba(191,129,255,0.3)",
                 boxShadow: isRecording ? "0 0 15px rgba(255,77,77,0.3)" : "none",
               }}
             >
               <span
                 className={`material-symbols-outlined text-[20px] ${isRecording ? "animate-pulse" : ""}`}
-                style={{ color: isRecording ? "#ff4d4d" : "#8ff5ff" }}
+                style={{ color: isRecording ? "#ff4d4d" : "#bf81ff" }}
               >
                 {isRecording ? "stop_circle" : "mic"}
               </span>
@@ -456,11 +463,11 @@ function GameContent() {
                 <div className="flex items-center gap-2">
                   <span
                     className="w-1.5 h-1.5 rounded-full animate-pulse"
-                    style={{ backgroundColor: "#8ff5ff", boxShadow: "0 0 4px #8ff5ff" }}
+                    style={{ backgroundColor: "#e879f9", boxShadow: "0 0 4px #e879f9" }}
                   />
                   <span
                     className="text-xs"
-                    style={{ color: "#8ff5ff", fontFamily: "var(--font-inter)" }}
+                    style={{ color: "#e879f9", fontFamily: "var(--font-inter)" }}
                   >
                     AI가 반대로 구현 중...
                   </span>

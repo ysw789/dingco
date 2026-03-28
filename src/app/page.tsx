@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import AsciiArt from "@/components/AsciiArt";
 
 export default function LobbyPage() {
   const [nickname, setNickname] = useState("");
@@ -17,10 +18,19 @@ export default function LobbyPage() {
       className="flex h-screen overflow-hidden items-center justify-center relative"
       style={{ backgroundColor: "#0e0e0f", color: "#ffffff" }}
     >
-      {/* 배경 글로우 */}
+      {/* ASCII Art 배경 */}
+      <div className="absolute inset-0 pointer-events-none z-0 opacity-40">
+        <AsciiArt />
+      </div>
+
+      {/* 배경 글로우 - 보라 + 핑크 */}
       <div
-        className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full pointer-events-none"
-        style={{ backgroundColor: "rgba(143,245,255,0.04)", filter: "blur(120px)" }}
+        className="absolute top-1/3 left-1/3 -translate-x-1/2 w-[500px] h-[500px] rounded-full pointer-events-none z-[1]"
+        style={{ backgroundColor: "rgba(191,129,255,0.05)", filter: "blur(120px)" }}
+      />
+      <div
+        className="absolute top-1/4 right-1/3 translate-x-1/2 w-[400px] h-[400px] rounded-full pointer-events-none z-[1]"
+        style={{ backgroundColor: "rgba(244,114,182,0.04)", filter: "blur(140px)" }}
       />
 
       <div className="flex flex-col items-center gap-10 z-10 w-full max-w-lg px-6">
@@ -29,11 +39,11 @@ export default function LobbyPage() {
           <div className="flex items-center justify-center gap-2 mb-4">
             <span
               className="w-2 h-2 rounded-full animate-pulse"
-              style={{ backgroundColor: "#8ff5ff", boxShadow: "0 0 8px #8ff5ff" }}
+              style={{ backgroundColor: "#bf81ff", boxShadow: "0 0 8px #bf81ff" }}
             />
             <span
               className="text-[10px] tracking-widest uppercase"
-              style={{ color: "#8ff5ff", fontFamily: "var(--font-space-grotesk)" }}
+              style={{ color: "#bf81ff", fontFamily: "var(--font-space-grotesk)" }}
             >
               Live Session
             </span>
@@ -43,17 +53,30 @@ export default function LobbyPage() {
             style={{
               color: "#ffffff",
               fontFamily: "var(--font-space-grotesk)",
-              textShadow: "0 0 40px rgba(143,245,255,0.2)",
+              textShadow: "0 0 40px rgba(191,129,255,0.2)",
             }}
           >
-            말 안 듣는
+            입코딩:{" "}
+            <span
+              style={{
+                background: "linear-gradient(135deg, #bf81ff, #e879f9)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              딩코입
+            </span>
           </h1>
           <h1
             className="text-5xl font-bold tracking-tight"
             style={{
-              color: "#8ff5ff",
               fontFamily: "var(--font-space-grotesk)",
-              textShadow: "0 0 40px rgba(143,245,255,0.4)",
+              background: "linear-gradient(135deg, #e879f9 0%, #f472b6 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              filter: "drop-shadow(0 0 20px rgba(232,121,249,0.4))",
             }}
           >
             AI IDE
@@ -70,23 +93,23 @@ export default function LobbyPage() {
 
         {/* 룰 카드 */}
         <div
-          className="w-full p-5 space-y-3"
+          className="w-full p-5 space-y-3 opacity-80"
           style={{
             backgroundColor: "#131314",
-            border: "1px solid rgba(72,72,73,0.2)",
+            border: "1px solid rgba(191,129,255,0.15)",
             borderRadius: "12px",
           }}
         >
           {[
-            { icon: "mic", text: "음성으로만 지시할 수 있습니다" },
-            { icon: "swap_horiz", text: "AI가 반대로 구현합니다" },
-            { icon: "timer", text: "제한 시간은 1분입니다" },
-            { icon: "how_to_vote", text: "참가자 투표로 순위가 결정됩니다" },
-          ].map(({ icon, text }) => (
+            { icon: "mic", text: "음성으로만 지시할 수 있습니다", color: "#bf81ff" },
+            { icon: "swap_horiz", text: "AI가 반대로 구현합니다", color: "#e879f9" },
+            { icon: "timer", text: "제한 시간은 1분입니다", color: "#f472b6" },
+            { icon: "how_to_vote", text: "참가자 투표로 순위가 결정됩니다", color: "#bf81ff" },
+          ].map(({ icon, text, color }) => (
             <div key={text} className="flex items-center gap-3">
               <span
                 className="material-symbols-outlined text-[18px] shrink-0"
-                style={{ color: "#8ff5ff" }}
+                style={{ color }}
               >
                 {icon}
               </span>
@@ -112,23 +135,23 @@ export default function LobbyPage() {
             style={{
               color: "#ffffff",
               fontFamily: "var(--font-inter)",
-              border: "1px solid rgba(72,72,73,0.3)",
+              border: "1px solid rgba(191,129,255,0.2)",
               borderRadius: "8px",
               backgroundColor: "#131314",
             }}
-            onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(143,245,255,0.5)")}
-            onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(72,72,73,0.3)")}
+            onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(191,129,255,0.6)")}
+            onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(191,129,255,0.2)")}
           />
           <button
             onClick={handleStart}
             disabled={!nickname.trim()}
             className="w-full py-3 text-sm font-bold tracking-widest uppercase transition-all hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
             style={{
-              backgroundColor: "#8ff5ff",
-              color: "#005d63",
+              background: "linear-gradient(135deg, #bf81ff 0%, #e879f9 50%, #f472b6 100%)",
+              color: "#ffffff",
               fontFamily: "var(--font-space-grotesk)",
               borderRadius: "8px",
-              boxShadow: "0 0 30px rgba(143,245,255,0.2)",
+              boxShadow: "0 0 30px rgba(191,129,255,0.3)",
             }}
           >
             게임 시작
@@ -138,11 +161,11 @@ export default function LobbyPage() {
               onClick={() => router.push("/gallery")}
               className="flex-1 py-2.5 text-xs font-bold tracking-widest uppercase transition-all hover:opacity-90"
               style={{
-                color: "#8ff5ff",
+                color: "#bf81ff",
                 fontFamily: "var(--font-space-grotesk)",
-                border: "1px solid rgba(143,245,255,0.2)",
+                border: "1px solid rgba(191,129,255,0.25)",
                 borderRadius: "8px",
-                backgroundColor: "rgba(143,245,255,0.05)",
+                backgroundColor: "rgba(191,129,255,0.06)",
               }}
             >
               갤러리 보기
