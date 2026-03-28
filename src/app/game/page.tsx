@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { DeepgramClient } from "@deepgram/sdk";
 
 const MOCK_CODE = `<!DOCTYPE html>
 <html lang="ko">
@@ -57,8 +56,7 @@ function GameContent() {
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const connectionRef = useRef<any>(null);
+  const chunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
 
   // 타이머
@@ -77,98 +75,79 @@ function GameContent() {
   const stopRecording = useCallback(() => {
     mediaRecorderRef.current?.stop();
     streamRef.current?.getTracks().forEach((t) => t.stop());
-    connectionRef.current?.finish?.();
-    connectionRef.current?.close?.();
     mediaRecorderRef.current = null;
     streamRef.current = null;
-    connectionRef.current = null;
     setIsRecording(false);
     setInterimTranscript("");
   }, []);
 
   const startRecording = useCallback(async (): Promise<void> => {
     setMicError("");
-
-    const apiKey = process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY;
-    if (!apiKey) {
-      setMicError(".env.local에 NEXT_PUBLIC_DEEPGRAM_API_KEY를 설정해주세요");
-      return;
-    }
+    chunksRef.current = [];
 
     let stream: MediaStream;
     try {
       stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    } catch {
+    } catch (e) {
+      console.error("[STT] 마이크 오류:", e);
       setMicError("마이크 권한을 허용해주세요");
       return;
     }
 
     streamRef.current = stream;
 
-    // Deepgram 연결
-    const client = new DeepgramClient({ apiKey });
-    const connection = await client.listen.v1.connect({
-      model: "nova-2",
-      language: "ko",
-      smart_format: "true",
-      interim_results: "true",
-      endpointing: 800,
-      Authorization: `Token ${apiKey}`,
+    const mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+    mediaRecorder.addEventListener("dataavailable", (e) => {
+      if (e.data.size > 0) chunksRef.current.push(e.data);
     });
-
-    connectionRef.current = connection;
-
-    connection.on("open", () => {
-      const mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
-
-      mediaRecorder.addEventListener("dataavailable", (e) => {
-        if (e.data.size > 0 && connection.readyState === 1) {
-          connection.sendMedia(e.data);
-        }
-      });
-
-      mediaRecorder.start(250);
-      mediaRecorderRef.current = mediaRecorder;
-    });
-
-    connection.on("message", (data) => {
-      if (data.type !== "Results") return;
-      const alt = (data as { type: string; is_final?: boolean; channel: { alternatives: { transcript: string }[] } }).channel?.alternatives?.[0];
-      if (!alt?.transcript) return;
-      const isFinal = (data as { is_final?: boolean }).is_final;
-
-      if (isFinal) {
-        setTranscript((prev) => (prev ? prev + " " + alt.transcript : alt.transcript));
-        setInterimTranscript("");
-      } else {
-        setInterimTranscript(alt.transcript);
-      }
-    });
-
-    connection.on("error", (err) => {
-      console.error("Deepgram error:", err);
-      setMicError("STT 연결 오류가 발생했습니다");
-      stopRecording();
-    });
-
+    mediaRecorder.start(250);
+    mediaRecorderRef.current = mediaRecorder;
     setIsRecording(true);
-  }, [stopRecording]);
+  }, []);
 
   const handleMicClick = () => {
     if (!isRunning) setIsRunning(true);
     if (isProcessing) return;
 
     if (isRecording) {
+      // 녹음 중지 → 청크 수집 → Deepgram REST 전송
+      const recorder = mediaRecorderRef.current;
       stopRecording();
-      if (transcript || interimTranscript) {
+
+      const sendAudio = async () => {
+        if (chunksRef.current.length === 0) return;
         setIsProcessing(true);
-        setTimeout(() => {
+        try {
+          const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+          chunksRef.current = [];
+          const res = await fetch("/api/deepgram-token", {
+            method: "POST",
+            headers: { "Content-Type": "audio/webm" },
+            body: blob,
+          });
+          const json = await res.json();
+          if (json.transcript) {
+            setTranscript((prev) => (prev ? prev + " " + json.transcript : json.transcript));
+          }
+        } catch (e) {
+          console.error("[STT] transcribe 오류:", e);
+          setMicError("음성 인식 오류가 발생했습니다");
+        } finally {
           setIsProcessing(false);
-          setCode(MOCK_CODE);
-        }, 2500);
+        }
+      };
+
+      // MediaRecorder가 마지막 청크를 flush한 뒤 전송
+      if (recorder) {
+        recorder.addEventListener("stop", () => { void sendAudio(); }, { once: true });
+      } else {
+        void sendAudio();
       }
     } else {
-      void startRecording();
+      startRecording().catch((e) => {
+        console.error("[STT] startRecording 에러:", e);
+        setMicError("STT 시작 중 오류 발생");
+      });
     }
   };
 
