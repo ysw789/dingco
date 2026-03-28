@@ -11,3 +11,29 @@ export interface PaginatedResponse<T> {
   size: number;
   number: number;
 }
+
+export interface GenerateRequest {
+  transcript: string;
+  previousCode?: string;
+}
+
+export interface GenerateResponse {
+  code: string;
+}
+
+export interface Submission {
+  id: string;
+  nickname: string;
+  html_code: string;
+  transcript: string | null;
+  vote_count: number;
+  created_at: string;
+  voted_by_me?: boolean;
+}
+
+export interface RankEntry {
+  rank: number;
+  id: string;
+  nickname: string;
+  vote_count: number;
+}
