@@ -13,7 +13,10 @@ export async function POST(request: Request) {
   }
 
   try {
-    const code = await generateOppositeCode(body.transcript, body.previousCode);
+    const code = await generateOppositeCode(
+      body.transcript,
+      body.previousCode,
+    );
     return NextResponse.json({ code } satisfies GenerateResponse);
   } catch (error) {
     console.error("Gemini generation error:", error);

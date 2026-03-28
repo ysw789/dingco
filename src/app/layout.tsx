@@ -15,8 +15,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "NEURAL_HORIZON | Cognitive Compression",
-  description: "한 글자 요약기 — 극단적 의미 압축 엔진",
+  title: "딩코 | 말 안 듣는 AI IDE",
+  description: "청개구리 같은 AI를 설득해서 예제와 비슷한 화면을 만들어보세요",
 };
 
 export default function RootLayout({
