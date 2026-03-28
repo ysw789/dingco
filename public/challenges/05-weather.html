@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>날씨</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(160deg, #6ea8fe, #3b82f6);
+    font-family: sans-serif;
+    color: white;
+  }
+  .card { text-align: center; padding: 40px; }
+  .city { font-size: 18px; opacity: 0.85; margin-bottom: 8px; }
+  .emoji { font-size: 80px; margin: 16px 0; }
+  .temp { font-size: 72px; font-weight: 200; }
+  .desc { font-size: 18px; opacity: 0.85; margin: 8px 0 32px; }
+  .details { display: flex; gap: 32px; justify-content: center; }
+  .detail { text-align: center; }
+  .detail-val { font-size: 18px; font-weight: bold; }
+  .detail-label { font-size: 12px; opacity: 0.7; margin-top: 4px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="city">📍 서울특별시</div>
+    <div class="emoji">☀️</div>
+    <div class="temp">23°</div>
+    <div class="desc">맑음</div>
+    <div class="details">
+      <div class="detail"><div class="detail-val">62%</div><div class="detail-label">습도</div></div>
+      <div class="detail"><div class="detail-val">3m/s</div><div class="detail-label">풍속</div></div>
+      <div class="detail"><div class="detail-val">27°</div><div class="detail-label">최고</div></div>
+    </div>
+  </div>
+</body>
+</html>

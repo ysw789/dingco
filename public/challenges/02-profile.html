@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>프로필</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fafafa;
+    font-family: sans-serif;
+  }
+  .card {
+    background: white;
+    border-radius: 16px;
+    padding: 40px 32px;
+    text-align: center;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    width: 280px;
+  }
+  .avatar {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: #e0e7ff;
+    margin: 0 auto 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+  }
+  .name { font-size: 20px; font-weight: bold; color: #111; }
+  .role { font-size: 13px; color: #888; margin: 4px 0 20px; }
+  .stats { display: flex; justify-content: space-around; margin-bottom: 24px; }
+  .stat-num { font-size: 18px; font-weight: bold; color: #111; }
+  .stat-label { font-size: 11px; color: #aaa; }
+  .follow-btn {
+    width: 100%; padding: 10px;
+    background: #4f46e5; color: white;
+    border: none; border-radius: 8px;
+    font-size: 14px; font-weight: bold; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="avatar">👤</div>
+    <div class="name">김철수</div>
+    <div class="role">프론트엔드 개발자</div>
+    <div class="stats">
+      <div><div class="stat-num">128</div><div class="stat-label">게시물</div></div>
+      <div><div class="stat-num">2.4K</div><div class="stat-label">팔로워</div></div>
+      <div><div class="stat-num">312</div><div class="stat-label">팔로잉</div></div>
+    </div>
+    <button class="follow-btn">팔로우</button>
+  </div>
+</body>
+</html>

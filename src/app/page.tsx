@@ -213,7 +213,7 @@ export default function HomePage() {
           htmlCode: code,
           transcript: prompts.join(" | "),
           userPrompts: prompts,
-          exampleImageId: exampleImage?.id || null,
+          exampleImageId: null, // 로컬 파일 기반이므로 DB FK 참조 안 함
           attemptLimit: attemptLimit || null,
           timeLimit: timeLimitMin || null,
         }),

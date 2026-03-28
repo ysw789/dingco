@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>파일 업로드</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { height: 100vh; display: flex; align-items: center; justify-content: center; background: #f8fafc; font-family: sans-serif; }
+  .panel { background: white; border-radius: 16px; padding: 32px; width: 400px; box-shadow: 0 2px 16px rgba(0,0,0,0.08); }
+  h3 { font-size: 18px; font-weight: bold; color: #0f172a; margin-bottom: 20px; }
+  .drop-zone { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 40px; text-align: center; background: #f8fafc; margin-bottom: 20px; cursor: pointer; }
+  .drop-zone:hover { border-color: #6366f1; background: #eef2ff; }
+  .drop-icon { font-size: 40px; margin-bottom: 12px; }
+  .drop-text { font-size: 14px; color: #475569; margin-bottom: 6px; }
+  .drop-sub { font-size: 12px; color: #94a3b8; }
+  .drop-sub span { color: #6366f1; font-weight: 600; cursor: pointer; }
+  .file-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+  .file-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: #f8fafc; border-radius: 10px; }
+  .file-icon { font-size: 22px; }
+  .file-info { flex: 1; }
+  .file-name { font-size: 13px; font-weight: 600; color: #0f172a; margin-bottom: 2px; }
+  .file-size { font-size: 11px; color: #94a3b8; }
+  .prog-bg { height: 4px; background: #e2e8f0; border-radius: 2px; margin-top: 6px; }
+  .prog-fill { height: 100%; background: #6366f1; border-radius: 2px; }
+  .upload-btn { width: 100%; padding: 12px; background: #6366f1; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; }
+</style>
+</head>
+<body>
+  <div class="panel">
+    <h3>파일 업로드</h3>
+    <div class="drop-zone">
+      <div class="drop-icon">☁️</div>
+      <div class="drop-text">파일을 여기에 드래그하세요</div>
+      <div class="drop-sub">또는 <span>파일 선택</span>하기 · PNG, JPG, PDF (최대 10MB)</div>
+    </div>
+    <div class="file-list">
+      <div class="file-item">
+        <div class="file-icon">🖼️</div>
+        <div class="file-info">
+          <div class="file-name">디자인_시안_v3.png</div>
+          <div class="file-size">2.4 MB · 완료</div>
+          <div class="prog-bg"><div class="prog-fill" style="width:100%"></div></div>
+        </div>
+        <span style="color:#22c55e;font-size:18px">✓</span>
+      </div>
+      <div class="file-item">
+        <div class="file-icon">📄</div>
+        <div class="file-info">
+          <div class="file-name">발표자료_최종.pdf</div>
+          <div class="file-size">5.1 MB · 업로드 중...</div>
+          <div class="prog-bg"><div class="prog-fill" style="width:65%"></div></div>
+        </div>
+        <span style="color:#94a3b8;font-size:14px">65%</span>
+      </div>
+    </div>
+    <button class="upload-btn">업로드 완료</button>
+  </div>
+</body>
+</html>
