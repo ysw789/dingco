@@ -55,9 +55,8 @@ function GameContent() {
   const [micError, setMicError] = useState("");
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const chunksRef = useRef<Blob[]>([]);
-  const streamRef = useRef<MediaStream | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const recognitionRef = useRef<any>(null);
 
   // 타이머
   useEffect(() => {
@@ -73,35 +72,54 @@ function GameContent() {
   }, [isRunning, timeLeft]);
 
   const stopRecording = useCallback(() => {
-    mediaRecorderRef.current?.stop();
-    streamRef.current?.getTracks().forEach((t) => t.stop());
-    mediaRecorderRef.current = null;
-    streamRef.current = null;
+    recognitionRef.current?.stop();
+    recognitionRef.current = null;
     setIsRecording(false);
     setInterimTranscript("");
   }, []);
 
-  const startRecording = useCallback(async (): Promise<void> => {
+  const startRecording = useCallback(() => {
     setMicError("");
-    chunksRef.current = [];
 
-    let stream: MediaStream;
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    } catch (e) {
-      console.error("[STT] 마이크 오류:", e);
-      setMicError("마이크 권한을 허용해주세요");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const SpeechRecognition = (window as any).SpeechRecognition ?? (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setMicError("이 브라우저는 음성 인식을 지원하지 않습니다 (Chrome 권장)");
       return;
     }
 
-    streamRef.current = stream;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const recognition = new SpeechRecognition() as any;
+    recognition.lang = "ko-KR";
+    recognition.continuous = true;
+    recognition.interimResults = true;
 
-    const mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
-    mediaRecorder.addEventListener("dataavailable", (e) => {
-      if (e.data.size > 0) chunksRef.current.push(e.data);
-    });
-    mediaRecorder.start(250);
-    mediaRecorderRef.current = mediaRecorder;
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      let interim = "";
+      let final = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const text = event.results[i][0].transcript;
+        if (event.results[i].isFinal) final += text;
+        else interim += text;
+      }
+      if (final) setTranscript((prev) => (prev ? prev + " " + final : final));
+      setInterimTranscript(interim);
+    };
+
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      if (event.error === "not-allowed") setMicError("마이크 권한을 허용해주세요");
+      else if (event.error !== "aborted") setMicError(`음성 인식 오류: ${event.error}`);
+    };
+
+    recognition.onend = () => {
+      // continuous=true여도 자동 종료될 수 있어 재시작
+      if (recognitionRef.current) {
+        try { recognitionRef.current.start(); } catch { /* already started */ }
+      }
+    };
+
+    recognition.start();
+    recognitionRef.current = recognition;
     setIsRecording(true);
   }, []);
 
@@ -110,44 +128,9 @@ function GameContent() {
     if (isProcessing) return;
 
     if (isRecording) {
-      // 녹음 중지 → 청크 수집 → Deepgram REST 전송
-      const recorder = mediaRecorderRef.current;
       stopRecording();
-
-      const sendAudio = async () => {
-        if (chunksRef.current.length === 0) return;
-        setIsProcessing(true);
-        try {
-          const blob = new Blob(chunksRef.current, { type: "audio/webm" });
-          chunksRef.current = [];
-          const res = await fetch("/api/deepgram-token", {
-            method: "POST",
-            headers: { "Content-Type": "audio/webm" },
-            body: blob,
-          });
-          const json = await res.json();
-          if (json.transcript) {
-            setTranscript((prev) => (prev ? prev + " " + json.transcript : json.transcript));
-          }
-        } catch (e) {
-          console.error("[STT] transcribe 오류:", e);
-          setMicError("음성 인식 오류가 발생했습니다");
-        } finally {
-          setIsProcessing(false);
-        }
-      };
-
-      // MediaRecorder가 마지막 청크를 flush한 뒤 전송
-      if (recorder) {
-        recorder.addEventListener("stop", () => { void sendAudio(); }, { once: true });
-      } else {
-        void sendAudio();
-      }
     } else {
-      startRecording().catch((e) => {
-        console.error("[STT] startRecording 에러:", e);
-        setMicError("STT 시작 중 오류 발생");
-      });
+      startRecording();
     }
   };
 
