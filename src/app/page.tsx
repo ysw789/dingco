@@ -182,8 +182,18 @@ export default function HomePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ transcript: promptText, previousCode: code || undefined }),
       });
-      const data = await res.json();
-      if (data.code) setCode(data.code);
+      if (!res.ok || !res.body) throw new Error("Generate failed");
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulated = "";
+      setSubPhase("showing");
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        accumulated += decoder.decode(value, { stream: true });
+        const cleaned = accumulated.replace(/^```html?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
+        setCode(cleaned);
+      }
       setPrompts((p) => [...p, promptText]);
     } catch (err) { console.error("Generate error:", err); }
     setSubPhase("showing");
@@ -213,7 +223,7 @@ export default function HomePage() {
           htmlCode: code,
           transcript: prompts.join(" | "),
           userPrompts: prompts,
-          exampleImageId: null, // 로컬 파일 기반이므로 DB FK 참조 안 함
+          exampleHtml: exampleImage?.html_code || null,
           attemptLimit: attemptLimit || null,
           timeLimit: timeLimitMin || null,
         }),
