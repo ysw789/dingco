@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { DeepgramClient } from "@deepgram/sdk";
 
 const MOCK_CODE = `<!DOCTYPE html>
 <html lang="ko">
@@ -40,8 +40,6 @@ const MOCK_CODE = `<!DOCTYPE html>
 </body>
 </html>`;
 
-const MOCK_TRANSCRIPT = "버튼을 왼쪽에 파란색 작은 버튼으로 만들어줘";
-
 function GameContent() {
   const searchParams = useSearchParams();
   const nickname = searchParams.get("nickname") || "익명";
@@ -51,42 +49,127 @@ function GameContent() {
   const [isRunning, setIsRunning] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState("");
+  const [interimTranscript, setInterimTranscript] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [code, setCode] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [micError, setMicError] = useState("");
 
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const connectionRef = useRef<any>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+
+  // 타이머
   useEffect(() => {
     if (isRunning && timeLeft > 0) {
       timerRef.current = setInterval(() => setTimeLeft((t) => t - 1), 1000);
     } else if (timeLeft === 0) {
       setIsRunning(false);
+      stopRecording();
     }
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [isRunning, timeLeft]);
 
-  const handleMicClick = () => {
-    if (!isRunning) {
-      setIsRunning(true);
+  const stopRecording = useCallback(() => {
+    mediaRecorderRef.current?.stop();
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    connectionRef.current?.finish?.();
+    connectionRef.current?.close?.();
+    mediaRecorderRef.current = null;
+    streamRef.current = null;
+    connectionRef.current = null;
+    setIsRecording(false);
+    setInterimTranscript("");
+  }, []);
+
+  const startRecording = useCallback(async (): Promise<void> => {
+    setMicError("");
+
+    const apiKey = process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY;
+    if (!apiKey) {
+      setMicError(".env.local에 NEXT_PUBLIC_DEEPGRAM_API_KEY를 설정해주세요");
+      return;
     }
-    if (isProcessing) return;
-    setIsRecording((r) => {
-      if (!r) {
-        // 녹음 시작 → 2초 후 mock transcript + processing
-        setTimeout(() => {
-          setIsRecording(false);
-          setTranscript(MOCK_TRANSCRIPT);
-          setIsProcessing(true);
-          setTimeout(() => {
-            setIsProcessing(false);
-            setCode(MOCK_CODE);
-          }, 2500);
-        }, 2000);
-      }
-      return !r;
+
+    let stream: MediaStream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch {
+      setMicError("마이크 권한을 허용해주세요");
+      return;
+    }
+
+    streamRef.current = stream;
+
+    // Deepgram 연결
+    const client = new DeepgramClient({ apiKey });
+    const connection = await client.listen.v1.connect({
+      model: "nova-2",
+      language: "ko",
+      smart_format: "true",
+      interim_results: "true",
+      endpointing: 800,
+      Authorization: `Token ${apiKey}`,
     });
+
+    connectionRef.current = connection;
+
+    connection.on("open", () => {
+      const mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+
+      mediaRecorder.addEventListener("dataavailable", (e) => {
+        if (e.data.size > 0 && connection.readyState === 1) {
+          connection.sendMedia(e.data);
+        }
+      });
+
+      mediaRecorder.start(250);
+      mediaRecorderRef.current = mediaRecorder;
+    });
+
+    connection.on("message", (data) => {
+      if (data.type !== "Results") return;
+      const alt = (data as { type: string; is_final?: boolean; channel: { alternatives: { transcript: string }[] } }).channel?.alternatives?.[0];
+      if (!alt?.transcript) return;
+      const isFinal = (data as { is_final?: boolean }).is_final;
+
+      if (isFinal) {
+        setTranscript((prev) => (prev ? prev + " " + alt.transcript : alt.transcript));
+        setInterimTranscript("");
+      } else {
+        setInterimTranscript(alt.transcript);
+      }
+    });
+
+    connection.on("error", (err) => {
+      console.error("Deepgram error:", err);
+      setMicError("STT 연결 오류가 발생했습니다");
+      stopRecording();
+    });
+
+    setIsRecording(true);
+  }, [stopRecording]);
+
+  const handleMicClick = () => {
+    if (!isRunning) setIsRunning(true);
+    if (isProcessing) return;
+
+    if (isRecording) {
+      stopRecording();
+      if (transcript || interimTranscript) {
+        setIsProcessing(true);
+        setTimeout(() => {
+          setIsProcessing(false);
+          setCode(MOCK_CODE);
+        }, 2500);
+      }
+    } else {
+      void startRecording();
+    }
   };
 
   const timerColor =
@@ -101,6 +184,8 @@ function GameContent() {
 
   const mins = String(Math.floor(timeLeft / 60)).padStart(2, "0");
   const secs = String(timeLeft % 60).padStart(2, "0");
+
+  const displayTranscript = transcript + (interimTranscript ? (transcript ? " " : "") + interimTranscript : "");
 
   if (isSubmitted) {
     return (
@@ -168,7 +253,6 @@ function GameContent() {
           borderBottom: "1px solid rgba(72,72,73,0.15)",
         }}
       >
-        {/* 닉네임 */}
         <div className="flex items-center gap-2">
           <div
             className="w-7 h-7 rounded-full flex items-center justify-center"
@@ -249,9 +333,7 @@ function GameContent() {
           >
             <div
               className="flex items-center gap-2 px-3 h-full"
-              style={{
-                borderBottom: "2px solid #8ff5ff",
-              }}
+              style={{ borderBottom: "2px solid #8ff5ff" }}
             >
               <span
                 className="material-symbols-outlined text-[14px]"
@@ -266,7 +348,7 @@ function GameContent() {
                 index.html
               </span>
             </div>
-            <div className="ml-auto flex items-center gap-2">
+            <div className="ml-auto">
               <div
                 className="px-2 py-0.5 text-[9px] tracking-widest uppercase"
                 style={{
@@ -327,18 +409,18 @@ function GameContent() {
 
           {/* STT 영역 */}
           <div
-            className="shrink-0 px-4 py-3 flex items-center gap-3"
+            className="shrink-0 px-4 py-3 flex items-start gap-3"
             style={{
               backgroundColor: "#131314",
               borderTop: "1px solid rgba(72,72,73,0.15)",
-              minHeight: 56,
+              minHeight: 64,
             }}
           >
             {/* 마이크 버튼 */}
             <button
               onClick={handleMicClick}
               disabled={timeLeft === 0 || isProcessing}
-              className="w-10 h-10 rounded-full shrink-0 flex items-center justify-center transition-all disabled:opacity-40"
+              className="w-10 h-10 rounded-full shrink-0 flex items-center justify-center transition-all disabled:opacity-40 mt-0.5"
               style={{
                 backgroundColor: isRecording
                   ? "rgba(255,77,77,0.15)"
@@ -358,8 +440,12 @@ function GameContent() {
             </button>
 
             {/* 트랜스크립트 */}
-            <div className="flex-1">
-              {isProcessing ? (
+            <div className="flex-1 pt-1">
+              {micError ? (
+                <p className="text-xs" style={{ color: "#ff4d4d", fontFamily: "var(--font-inter)" }}>
+                  {micError}
+                </p>
+              ) : isProcessing ? (
                 <div className="flex items-center gap-2">
                   <span
                     className="w-1.5 h-1.5 rounded-full animate-pulse"
@@ -372,12 +458,15 @@ function GameContent() {
                     AI가 반대로 구현 중...
                   </span>
                 </div>
-              ) : transcript ? (
+              ) : displayTranscript ? (
                 <p
-                  className="text-xs line-clamp-2"
-                  style={{ color: "#767576", fontFamily: "var(--font-inter)" }}
+                  className="text-xs leading-relaxed line-clamp-3"
+                  style={{ color: "#adaaab", fontFamily: "var(--font-inter)" }}
                 >
-                  &quot;{transcript}&quot;
+                  <span style={{ color: "#767576" }}>&quot;{transcript}&quot;</span>
+                  {interimTranscript && (
+                    <span style={{ color: "#484849" }}> {interimTranscript}</span>
+                  )}
                 </p>
               ) : (
                 <p
@@ -393,7 +482,6 @@ function GameContent() {
 
         {/* 오른쪽: 미리보기 */}
         <div className="flex flex-col w-1/2 h-full">
-          {/* 미리보기 탭 바 */}
           <div
             className="flex items-center gap-2 px-4 h-9 shrink-0"
             style={{
@@ -415,7 +503,6 @@ function GameContent() {
             </span>
           </div>
 
-          {/* iframe 미리보기 */}
           <div className="flex-1 overflow-hidden">
             {code ? (
               <iframe
