@@ -3,12 +3,12 @@ import { getSupabase } from "@/lib/supabase";
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { nickname, htmlCode, transcript, userPrompts, exampleImageId, attemptLimit, timeLimit } = body as {
+  const { nickname, htmlCode, transcript, userPrompts, exampleHtml, attemptLimit, timeLimit } = body as {
     nickname: string;
     htmlCode: string;
     transcript?: string;
     userPrompts?: string[];
-    exampleImageId?: string;
+    exampleHtml?: string;
     attemptLimit?: number;
     timeLimit?: number;
   };
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       html_code: htmlCode,
       transcript: transcript || null,
       user_prompts: userPrompts || [],
-      example_image_id: exampleImageId || null,
+      example_html: exampleHtml || null,
       attempt_limit: attemptLimit ?? null,
       time_limit: timeLimit ?? null,
     })
@@ -51,7 +51,7 @@ export async function GET(request: Request) {
 
   const { data: submissions, error } = await getSupabase()
     .from("submissions")
-    .select("*, example_images(image_url)")
+    .select("*")
     .order(orderCol, { ascending: false });
 
   if (error) {
@@ -77,8 +77,7 @@ export async function GET(request: Request) {
     html_code: s.html_code,
     transcript: s.transcript,
     user_prompts: s.user_prompts || [],
-    example_image_id: s.example_image_id,
-    example_image_url: s.example_images?.image_url || null,
+    example_html: s.example_html || null,
     vote_count: s.vote_count,
     created_at: s.created_at,
     voted_by_me: votedIds.has(s.id),

@@ -33,8 +33,7 @@ export interface Submission {
   html_code: string;
   transcript: string | null;
   user_prompts: string[];
-  example_image_id: string | null;
-  example_image_url?: string;
+  example_html: string | null;
   vote_count: number;
   created_at: string;
   voted_by_me?: boolean;
