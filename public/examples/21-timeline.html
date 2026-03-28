@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>타임라인</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { height: 100vh; display: flex; align-items: center; justify-content: center; background: #f8fafc; font-family: sans-serif; }
+  .timeline { width: 360px; padding: 8px; }
+  h3 { font-size: 18px; font-weight: bold; color: #0f172a; margin-bottom: 24px; }
+  .item { display: flex; gap: 16px; margin-bottom: 24px; position: relative; }
+  .item:not(:last-child)::before { content: ''; position: absolute; left: 15px; top: 34px; width: 2px; height: calc(100% + 0px); background: #e2e8f0; }
+  .dot { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; z-index: 1; }
+  .content { flex: 1; padding-top: 4px; }
+  .title { font-size: 14px; font-weight: 600; color: #0f172a; margin-bottom: 3px; }
+  .desc { font-size: 12px; color: #64748b; line-height: 1.5; margin-bottom: 4px; }
+  .time { font-size: 11px; color: #94a3b8; }
+</style>
+</head>
+<body>
+  <div class="timeline">
+    <h3>주문 현황</h3>
+    <div class="item">
+      <div class="dot" style="background:#dcfce7">✅</div>
+      <div class="content">
+        <div class="title">배송 완료</div>
+        <div class="desc">상품이 안전하게 배달되었습니다</div>
+        <div class="time">오늘 14:23</div>
+      </div>
+    </div>
+    <div class="item">
+      <div class="dot" style="background:#dbeafe">🚚</div>
+      <div class="content">
+        <div class="title">배송 중</div>
+        <div class="desc">택배가 근처 허브를 출발했습니다</div>
+        <div class="time">오늘 09:10</div>
+      </div>
+    </div>
+    <div class="item">
+      <div class="dot" style="background:#fef3c7">📦</div>
+      <div class="content">
+        <div class="title">상품 출고</div>
+        <div class="desc">물류센터에서 출고가 완료되었습니다</div>
+        <div class="time">어제 18:45</div>
+      </div>
+    </div>
+    <div class="item">
+      <div class="dot" style="background:#f3f4f6">🛒</div>
+      <div class="content">
+        <div class="title">주문 접수</div>
+        <div class="desc">결제가 완료되어 주문이 접수되었습니다</div>
+        <div class="time">2일 전 11:00</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

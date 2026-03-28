@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>온보딩</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(160deg, #eef2ff, #faf5ff); font-family: sans-serif; }
+  .card { background: white; border-radius: 24px; padding: 48px 40px; width: 380px; text-align: center; box-shadow: 0 4px 24px rgba(99,102,241,0.12); }
+  .progress { display: flex; gap: 6px; justify-content: center; margin-bottom: 32px; }
+  .dot { width: 32px; height: 4px; border-radius: 2px; background: #e2e8f0; }
+  .dot.active { background: #6366f1; }
+  .icon { font-size: 64px; margin-bottom: 20px; }
+  h2 { font-size: 22px; font-weight: 900; color: #0f172a; margin-bottom: 10px; }
+  p { font-size: 14px; color: #64748b; line-height: 1.7; margin-bottom: 32px; }
+  .next-btn { width: 100%; padding: 14px; background: #6366f1; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 12px; }
+  .skip { font-size: 13px; color: #94a3b8; cursor: pointer; }
+  .skip:hover { color: #64748b; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="progress">
+      <div class="dot active"></div>
+      <div class="dot active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+    <div class="icon">🎯</div>
+    <h2>목표를 설정하세요</h2>
+    <p>당신만의 학습 목표를 설정하면 AI가 맞춤형 커리큘럼을 제공합니다. 작은 목표부터 시작해보세요.</p>
+    <button class="next-btn">다음 →</button>
+    <div class="skip">건너뛰기</div>
+  </div>
+</body>
+</html>

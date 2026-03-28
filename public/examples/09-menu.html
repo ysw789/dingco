@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>레스토랑 메뉴</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fffbf5;
+    font-family: sans-serif;
+    padding: 24px;
+  }
+  .menu { width: 360px; }
+  .header { text-align: center; margin-bottom: 24px; }
+  .header h2 { font-size: 26px; font-weight: 900; color: #1a1a1a; }
+  .header p { font-size: 13px; color: #999; margin-top: 4px; }
+  .section-title {
+    font-size: 11px; font-weight: bold; letter-spacing: 2px;
+    color: #e67e22; text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .item {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0ebe3;
+  }
+  .item-name { font-size: 15px; font-weight: bold; color: #1a1a1a; margin-bottom: 3px; }
+  .item-desc { font-size: 12px; color: #999; }
+  .item-price { font-size: 15px; font-weight: bold; color: #e67e22; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <div class="menu">
+    <div class="header">
+      <h2>🍽 Casa Mia</h2>
+      <p>이탈리안 레스토랑</p>
+    </div>
+    <div class="section-title">파스타</div>
+    <div class="item">
+      <div><div class="item-name">카르보나라</div><div class="item-desc">베이컨, 달걀, 파마산 치즈</div></div>
+      <div class="item-price">16,000</div>
+    </div>
+    <div class="item">
+      <div><div class="item-name">알리오 올리오</div><div class="item-desc">마늘, 올리브오일, 페페론치노</div></div>
+      <div class="item-price">14,000</div>
+    </div>
+    <div class="section-title" style="margin-top:20px">피자</div>
+    <div class="item">
+      <div><div class="item-name">마르게리타</div><div class="item-desc">토마토, 모짜렐라, 바질</div></div>
+      <div class="item-price">18,000</div>
+    </div>
+    <div class="item">
+      <div><div class="item-name">페퍼로니</div><div class="item-desc">페퍼로니, 치즈, 토마토소스</div></div>
+      <div class="item-price">20,000</div>
+    </div>
+  </div>
+</body>
+</html>

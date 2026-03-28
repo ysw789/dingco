@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>검색</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: white; font-family: sans-serif; padding: 24px; }
+  .logo { font-size: 42px; font-weight: 900; color: #4285f4; margin-bottom: 24px; letter-spacing: -2px; }
+  .logo span:nth-child(2) { color: #ea4335; }
+  .logo span:nth-child(3) { color: #fbbc04; }
+  .logo span:nth-child(4) { color: #4285f4; }
+  .logo span:nth-child(5) { color: #34a853; }
+  .logo span:nth-child(6) { color: #ea4335; }
+  .search-bar { display: flex; align-items: center; width: 500px; padding: 12px 20px; border: 1.5px solid #dfe1e5; border-radius: 24px; gap: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; }
+  .search-bar input { flex: 1; border: none; outline: none; font-size: 16px; color: #202124; }
+  .search-bar .icon { color: #9aa0a6; font-size: 18px; }
+  .btns { display: flex; gap: 10px; margin-bottom: 40px; }
+  .btn { padding: 9px 16px; background: #f8f9fa; border: 1px solid #f8f9fa; border-radius: 4px; font-size: 14px; color: #3c4043; cursor: pointer; }
+  .results { width: 500px; }
+  .result { margin-bottom: 20px; }
+  .result-url { font-size: 13px; color: #202124; margin-bottom: 2px; }
+  .result-url span { color: #5f6368; }
+  .result-title { font-size: 18px; color: #1a0dab; cursor: pointer; margin-bottom: 4px; }
+  .result-desc { font-size: 13px; color: #4d5156; line-height: 1.5; }
+</style>
+</head>
+<body>
+  <div class="logo"><span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span></div>
+  <div class="search-bar">
+    <span class="icon">🔍</span>
+    <input value="맛있는 파스타 레시피">
+    <span class="icon">✕</span>
+  </div>
+  <div class="btns">
+    <button class="btn">검색</button>
+    <button class="btn">직접 방문</button>
+  </div>
+  <div class="results">
+    <div class="result">
+      <div class="result-url">recipe.co.kr › pasta <span>· recipe.co.kr</span></div>
+      <div class="result-title">정통 이탈리안 파스타 레시피 모음</div>
+      <div class="result-desc">카르보나라, 알리오올리오, 봉골레 등 집에서 쉽게 만드는 파스타 레시피를 소개합니다. 재료 준비부터 소스 만들기까지 자세히 설명합니다.</div>
+    </div>
+    <div class="result">
+      <div class="result-url">cooking.kr › recipes <span>· cooking.kr</span></div>
+      <div class="result-title">10분 완성 파스타 - 초보자도 쉽게</div>
+      <div class="result-desc">요리 초보자도 10분 안에 완성할 수 있는 간단한 파스타 레시피입니다. 냉장고 속 재료로 만드는 다양한 파스타 변형 레시피.</div>
+    </div>
+  </div>
+</body>
+</html>
