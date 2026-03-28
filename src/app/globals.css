@@ -128,3 +128,27 @@
     @apply font-sans;
   }
 }
+
+.glass-panel {
+  background: rgba(19, 19, 20, 0.6);
+  backdrop-filter: blur(40px);
+}
+
+.neon-glow {
+  text-shadow: 0 0 12px rgba(143, 245, 255, 0.6);
+}
+
+.neon-glow-secondary {
+  text-shadow: 0 0 12px rgba(191, 129, 255, 0.6);
+}
+
+.subtle-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.subtle-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.subtle-scroll::-webkit-scrollbar-thumb {
+  background: #262627;
+  border-radius: 10px;
+}
