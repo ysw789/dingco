@@ -94,7 +94,8 @@ function GameContent() {
     recognition.continuous = true;
     recognition.interimResults = true;
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    recognition.onresult = (event: any) => {
       let interim = "";
       let final = "";
       for (let i = event.resultIndex; i < event.results.length; i++) {
@@ -106,7 +107,8 @@ function GameContent() {
       setInterimTranscript(interim);
     };
 
-    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    recognition.onerror = (event: any) => {
       if (event.error === "not-allowed") setMicError("마이크 권한을 허용해주세요");
       else if (event.error !== "aborted") setMicError(`음성 인식 오류: ${event.error}`);
     };
@@ -129,6 +131,24 @@ function GameContent() {
 
     if (isRecording) {
       stopRecording();
+      const currentTranscript = transcript + (interimTranscript ? (transcript ? " " : "") + interimTranscript : "");
+      if (currentTranscript) {
+        setIsProcessing(true);
+        fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            transcript: currentTranscript,
+            previousCode: code || undefined,
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.code) setCode(data.code);
+          })
+          .catch((err) => console.error("Generate error:", err))
+          .finally(() => setIsProcessing(false));
+      }
     } else {
       startRecording();
     }
@@ -148,6 +168,31 @@ function GameContent() {
   const secs = String(timeLeft % 60).padStart(2, "0");
 
   const displayTranscript = transcript + (interimTranscript ? (transcript ? " " : "") + interimTranscript : "");
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!code || isSubmitting) return;
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/submissions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nickname,
+          htmlCode: code,
+          transcript: transcript || null,
+        }),
+      });
+      if (res.ok) {
+        setIsSubmitted(true);
+      }
+    } catch (err) {
+      console.error("Submit error:", err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (isSubmitted) {
     return (
@@ -263,8 +308,8 @@ function GameContent() {
 
         {/* 제출 버튼 */}
         <button
-          onClick={() => setIsSubmitted(true)}
-          disabled={!code}
+          onClick={handleSubmit}
+          disabled={!code || isSubmitting}
           className="flex items-center gap-2 px-5 py-2 text-xs font-bold tracking-widest uppercase transition-all hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed"
           style={{
             backgroundColor: "#8ff5ff",
