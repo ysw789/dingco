@@ -129,13 +129,13 @@ export default function GalleryPage() {
             ) : (
               <div className="space-y-6 max-w-5xl mx-auto">
                 {sorted.map((entry) => (
-                  <div key={entry.id} className="rounded-xl overflow-hidden" style={{ backgroundColor: "#131314", border: "1px solid rgba(72,72,73,0.15)" }}>
+                  <div key={entry.id} className="rounded-xl overflow-hidden cursor-pointer" style={{ backgroundColor: "#131314", border: "1px solid rgba(72,72,73,0.15)" }} onClick={() => router.push(`/gallery/${entry.id}`)}>
                     {/* 3-column: Example | Input | Result */}
                     <div className="grid grid-cols-3 gap-0" style={{ height: 220 }}>
                       {/* Example */}
                       <div className="flex items-center justify-center" style={{ backgroundColor: "#0a0a0b", borderRight: "1px solid rgba(72,72,73,0.1)" }}>
-                        {entry.example_image_url ? (
-                          <img src={entry.example_image_url} alt="예제" className="w-full h-full object-contain" />
+                        {entry.example_html ? (
+                          <iframe srcDoc={entry.example_html} className="w-full h-full border-0 pointer-events-none" sandbox="" title="예제" />
                         ) : (
                           <div className="text-center">
                             <span className="material-symbols-outlined text-2xl" style={{ color: "#262627" }}>image</span>
@@ -220,7 +220,7 @@ export default function GalleryPage() {
 
       {/* ═══ Hall of Fame Tab ═══ */}
       {tab === "hallOfFame" && (
-        <main className="flex-1 max-w-2xl mx-auto w-full px-6 pb-12">
+        <main className="flex-1 max-w-3xl mx-auto w-full px-6 pb-12">
           {loading ? (
             <div className="flex items-center justify-center h-64">
               <span className="text-sm" style={{ color: "#484849", fontFamily: "var(--font-inter)" }}>불러오는 중...</span>
@@ -236,14 +236,14 @@ export default function GalleryPage() {
               {top3.length >= 3 && (
                 <div className="mt-12 mb-10">
                   <p className="text-center text-[10px] tracking-widest uppercase mb-8" style={{ color: "#484849", fontFamily: "var(--font-space-grotesk)" }}>Top 3</p>
-                  <div className="flex items-end justify-center gap-4">
+                  <div className="flex items-end justify-center gap-6">
                     {podiumOrder.map((entry, idx) => {
                       const rank = ranked.indexOf(entry) + 1;
                       const color = PODIUM_COLORS[rank];
                       const height = PODIUM_HEIGHTS[rank];
                       const isFirst = rank === 1;
                       return (
-                        <div key={idx} className="flex flex-col items-center gap-2">
+                        <div key={idx} className="flex flex-col items-center gap-2 cursor-pointer" onClick={() => router.push(`/gallery/${entry.id}`)}>
                           <div className="text-center">
                             <div className="text-2xl mb-1">{BADGES[rank]}</div>
                             <p className="text-sm font-bold" style={{ color: isFirst ? color : "#fff", fontFamily: "var(--font-space-grotesk)", textShadow: isFirst ? `0 0 20px ${color}66` : "none" }}>{entry.nickname}</p>
@@ -252,8 +252,11 @@ export default function GalleryPage() {
                               <span className="text-xs tabular-nums font-bold" style={{ color, fontFamily: "var(--font-space-grotesk)" }}>{entry.vote_count}</span>
                             </div>
                           </div>
-                          <div className="w-28 flex items-center justify-center" style={{ height, backgroundColor: `${color}18`, border: `1px solid ${color}44`, borderRadius: "8px 8px 0 0", boxShadow: isFirst ? `0 0 30px ${color}22` : "none" }}>
-                            <span className="text-2xl font-black" style={{ color: `${color}88`, fontFamily: "var(--font-space-grotesk)" }}>{rank}</span>
+                          <div className="rounded-lg overflow-hidden" style={{ width: isFirst ? 160 : 130, height: isFirst ? 120 : 100, border: `1px solid ${color}44`, boxShadow: isFirst ? `0 0 30px ${color}22` : "none" }}>
+                            <iframe srcDoc={entry.html_code} className="w-full h-full border-0 pointer-events-none" sandbox="" title={`${entry.nickname}의 작품`} style={{ transform: "scale(0.5)", transformOrigin: "top left", width: "200%", height: "200%" }} />
+                          </div>
+                          <div className="w-full flex items-center justify-center" style={{ height: height / 2, backgroundColor: `${color}18`, border: `1px solid ${color}44`, borderRadius: "8px 8px 0 0" }}>
+                            <span className="text-xl font-black" style={{ color: `${color}88`, fontFamily: "var(--font-space-grotesk)" }}>{rank}</span>
                           </div>
                         </div>
                       );
@@ -268,13 +271,14 @@ export default function GalleryPage() {
                 {rest.map((entry, i) => {
                   const rank = i + 4;
                   return (
-                    <div key={entry.id} className="flex items-center gap-4 px-5 py-4 transition-colors" style={{ backgroundColor: "#131314", border: "1px solid rgba(72,72,73,0.15)", borderRadius: "10px" }}
+                    <div key={entry.id} className="flex items-center gap-4 px-5 py-4 transition-colors cursor-pointer" style={{ backgroundColor: "#131314", border: "1px solid rgba(72,72,73,0.15)", borderRadius: "10px" }}
+                      onClick={() => router.push(`/gallery/${entry.id}`)}
                       onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.borderColor = "rgba(72,72,73,0.3)")}
                       onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.borderColor = "rgba(72,72,73,0.15)")}
                     >
                       <span className="w-6 text-center text-sm font-bold tabular-nums" style={{ color: "#484849", fontFamily: "var(--font-space-grotesk)" }}>{rank}</span>
-                      <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: "#1e1e1f", border: "1px solid rgba(72,72,73,0.2)" }}>
-                        <span className="material-symbols-outlined text-[16px]" style={{ color: "#484849" }}>person</span>
+                      <div className="w-12 h-12 rounded overflow-hidden shrink-0" style={{ border: "1px solid rgba(72,72,73,0.2)" }}>
+                        <iframe srcDoc={entry.html_code} className="w-full h-full border-0 pointer-events-none" sandbox="" title={`${entry.nickname}의 작품`} style={{ transform: "scale(0.25)", transformOrigin: "top left", width: "400%", height: "400%" }} />
                       </div>
                       <span className="flex-1 text-sm font-medium" style={{ color: "#adaaab", fontFamily: "var(--font-space-grotesk)" }}>{entry.nickname}</span>
                       <div className="flex items-center gap-1.5">
