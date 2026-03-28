@@ -57,7 +57,7 @@ export default function SubmissionDetailPage() {
       <div className="flex flex-col items-center justify-center min-h-screen gap-3" style={{ backgroundColor: "#0e0e0f" }}>
         <span className="material-symbols-outlined text-4xl" style={{ color: "#262627" }}>error</span>
         <span className="text-sm" style={{ color: "#484849", fontFamily: "var(--font-inter)" }}>작품을 찾을 수 없습니다</span>
-        <button onClick={() => router.push("/gallery")} className="mt-4 px-4 py-2 text-xs font-bold tracking-widest uppercase" style={{ color: "#8ff5ff", fontFamily: "var(--font-space-grotesk)", border: "1px solid rgba(143,245,255,0.2)", borderRadius: "8px" }}>
+        <button onClick={() => router.push("/gallery")} className="mt-4 px-4 py-2 text-xs font-bold tracking-widest uppercase" style={{ color: "#bf81ff", fontFamily: "var(--font-space-grotesk)", border: "1px solid rgba(191,129,255,0.25)", borderRadius: "8px" }}>
           갤러리로 돌아가기
         </button>
       </div>
@@ -81,8 +81,8 @@ export default function SubmissionDetailPage() {
 
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: "rgba(143,245,255,0.1)", border: "1px solid rgba(143,245,255,0.15)" }}>
-              <span className="material-symbols-outlined text-[14px]" style={{ color: "#8ff5ff" }}>person</span>
+            <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: "rgba(191,129,255,0.1)", border: "1px solid rgba(191,129,255,0.2)" }}>
+              <span className="material-symbols-outlined text-[14px]" style={{ color: "#bf81ff" }}>person</span>
             </div>
             <span className="text-sm font-bold" style={{ color: "#fff", fontFamily: "var(--font-space-grotesk)" }}>{entry.nickname}</span>
           </div>
@@ -148,8 +148,8 @@ export default function SubmissionDetailPage() {
           <div className="flex-1 overflow-auto p-4 space-y-2">
             {(entry.user_prompts || []).length > 0 ? (
               entry.user_prompts.map((p, i) => (
-                <div key={i} className="flex gap-2 px-3 py-2 rounded-lg" style={{ backgroundColor: "rgba(143,245,255,0.04)", border: "1px solid rgba(143,245,255,0.08)" }}>
-                  <span className="text-[10px] font-bold shrink-0 mt-0.5" style={{ color: "#8ff5ff", fontFamily: "var(--font-space-grotesk)" }}>#{i + 1}</span>
+                <div key={i} className="flex gap-2 px-3 py-2 rounded-lg" style={{ backgroundColor: "rgba(191,129,255,0.05)", border: "1px solid rgba(191,129,255,0.1)" }}>
+                  <span className="text-[10px] font-bold shrink-0 mt-0.5" style={{ color: "#bf81ff", fontFamily: "var(--font-space-grotesk)" }}>#{i + 1}</span>
                   <p className="text-xs leading-relaxed" style={{ color: "#adaaab", fontFamily: "var(--font-inter)" }}>{p}</p>
                 </div>
               ))

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import type { ExampleImage } from "@/types/common";
+import AsciiArt from "@/components/AsciiArt";
 
 type Phase = "setup" | "game" | "result";
 type GameSubPhase = "idle" | "recording" | "confirming" | "generating" | "showing";
@@ -242,8 +243,8 @@ export default function HomePage() {
   /* ── Timer display ── */
   const mins = String(Math.floor(timeLeft / 60)).padStart(2, "0");
   const secs = String(timeLeft % 60).padStart(2, "0");
-  const timerColor = timeLeft <= 10 ? "#ff4d4d" : timeLeft <= 30 ? "#ffb84d" : "#8ff5ff";
-  const timerGlow = timeLeft <= 10 ? "0 0 20px rgba(255,77,77,0.5)" : timeLeft <= 30 ? "0 0 20px rgba(255,184,77,0.3)" : "0 0 20px rgba(143,245,255,0.3)";
+  const timerColor = timeLeft <= 10 ? "#ff4d4d" : timeLeft <= 30 ? "#ffb84d" : "#bf81ff";
+  const timerGlow = timeLeft <= 10 ? "0 0 20px rgba(255,77,77,0.5)" : timeLeft <= 30 ? "0 0 20px rgba(255,184,77,0.3)" : "0 0 20px rgba(191,129,255,0.3)";
 
   const displayTranscript = transcript + (interimTranscript ? (transcript ? " " : "") + interimTranscript : "");
 
@@ -251,12 +252,16 @@ export default function HomePage() {
   if (phase === "setup") {
     return (
       <div className="flex h-screen overflow-auto items-center justify-center relative" style={{ backgroundColor: "#0e0e0f", color: "#fff" }}>
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full pointer-events-none" style={{ backgroundColor: "rgba(143,245,255,0.03)", filter: "blur(140px)" }} />
+        {/* ASCII Art 배경 */}
+        <div className="absolute inset-0 pointer-events-none z-0 opacity-40">
+          <AsciiArt />
+        </div>
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full pointer-events-none" style={{ backgroundColor: "rgba(191,129,255,0.05)", filter: "blur(140px)" }} />
 
         <div className="flex flex-col items-center gap-8 z-10 w-full max-w-lg px-6 py-12">
           {/* Title */}
           <div className="text-center space-y-2">
-            <h1 className="text-6xl font-black tracking-tighter" style={{ fontFamily: "var(--font-space-grotesk)", color: "#8ff5ff", textShadow: "0 0 60px rgba(143,245,255,0.4), 0 0 120px rgba(143,245,255,0.1)" }}>
+            <h1 className="text-6xl font-black tracking-tighter ai-gradient-text" style={{ fontFamily: "var(--font-space-grotesk)", filter: "drop-shadow(0 0 40px rgba(191,129,255,0.4))" }}>
               딩코
             </h1>
             <p className="text-sm leading-relaxed mt-3" style={{ color: "#767576", fontFamily: "var(--font-inter)" }}>
@@ -275,8 +280,8 @@ export default function HomePage() {
                   className="px-3 py-1.5 text-xs font-bold transition-all"
                   style={{
                     fontFamily: "var(--font-space-grotesk)",
-                    backgroundColor: attemptLimit === v ? "#8ff5ff" : "#131314",
-                    color: attemptLimit === v ? "#005d63" : "#767576",
+                    background: attemptLimit === v ? "linear-gradient(135deg, #bf81ff, #e879f9)" : "#131314",
+                    color: attemptLimit === v ? "#fff" : "#767576",
                     border: attemptLimit === v ? "none" : "1px solid rgba(72,72,73,0.2)",
                     borderRadius: "6px",
                   }}
@@ -298,8 +303,8 @@ export default function HomePage() {
                   className="px-3 py-1.5 text-xs font-bold transition-all"
                   style={{
                     fontFamily: "var(--font-space-grotesk)",
-                    backgroundColor: timeLimitMin === v ? "#8ff5ff" : "#131314",
-                    color: timeLimitMin === v ? "#005d63" : "#767576",
+                    background: timeLimitMin === v ? "linear-gradient(135deg, #bf81ff, #e879f9)" : "#131314",
+                    color: timeLimitMin === v ? "#fff" : "#767576",
                     border: timeLimitMin === v ? "none" : "1px solid rgba(72,72,73,0.2)",
                     borderRadius: "6px",
                   }}
@@ -318,20 +323,20 @@ export default function HomePage() {
               onKeyDown={(e) => e.key === "Enter" && handleStart()}
               className="w-full bg-transparent outline-none text-sm px-4 py-3"
               style={{ color: "#fff", fontFamily: "var(--font-inter)", border: "1px solid rgba(72,72,73,0.3)", borderRadius: "8px", backgroundColor: "#131314" }}
-              onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(143,245,255,0.5)")}
+              onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(191,129,255,0.5)")}
               onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(72,72,73,0.3)")}
             />
             <button
               onClick={handleStart} disabled={!nickname.trim()}
               className="w-full py-3 text-sm font-bold tracking-widest uppercase transition-all hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{ backgroundColor: "#8ff5ff", color: "#005d63", fontFamily: "var(--font-space-grotesk)", borderRadius: "8px", boxShadow: "0 0 30px rgba(143,245,255,0.2)" }}
+              style={{ background: "linear-gradient(135deg, #bf81ff, #e879f9, #f472b6)", color: "#fff", fontFamily: "var(--font-space-grotesk)", borderRadius: "8px", boxShadow: "0 0 30px rgba(191,129,255,0.3)" }}
             >
               시작
             </button>
             <button
               onClick={() => router.push("/gallery")}
               className="w-full py-2.5 text-xs font-bold tracking-widest uppercase transition-all hover:opacity-90"
-              style={{ color: "#8ff5ff", fontFamily: "var(--font-space-grotesk)", border: "1px solid rgba(143,245,255,0.2)", borderRadius: "8px", backgroundColor: "rgba(143,245,255,0.05)" }}
+              style={{ color: "#bf81ff", fontFamily: "var(--font-space-grotesk)", border: "1px solid rgba(191,129,255,0.25)", borderRadius: "8px", backgroundColor: "rgba(191,129,255,0.06)" }}
             >
               갤러리 보기
             </button>
@@ -346,7 +351,7 @@ export default function HomePage() {
     return (
       <div className="flex flex-col h-screen" style={{ backgroundColor: "#0e0e0f", color: "#fff" }}>
         <header className="flex items-center justify-center px-6 h-14 shrink-0" style={{ backgroundColor: "#131314", borderBottom: "1px solid rgba(72,72,73,0.15)" }}>
-          <h2 className="text-sm font-bold tracking-widest uppercase" style={{ color: "#8ff5ff", fontFamily: "var(--font-space-grotesk)" }}>제출 완료</h2>
+          <h2 className="text-sm font-bold tracking-widest uppercase ai-gradient-text" style={{ fontFamily: "var(--font-space-grotesk)" }}>제출 완료</h2>
         </header>
 
         <div className="flex-1 overflow-auto p-6">
@@ -371,7 +376,7 @@ export default function HomePage() {
                   <p className="text-xs" style={{ color: "#484849", fontFamily: "var(--font-inter)" }}>입력된 프롬프트가 없습니다</p>
                 ) : prompts.map((p, i) => (
                   <div key={i} className="flex gap-2">
-                    <span className="text-[10px] font-bold shrink-0 mt-0.5" style={{ color: "#8ff5ff", fontFamily: "var(--font-space-grotesk)" }}>#{i + 1}</span>
+                    <span className="text-[10px] font-bold shrink-0 mt-0.5" style={{ color: "#bf81ff", fontFamily: "var(--font-space-grotesk)" }}>#{i + 1}</span>
                     <p className="text-xs leading-relaxed" style={{ color: "#adaaab", fontFamily: "var(--font-inter)" }}>{p}</p>
                   </div>
                 ))}
@@ -395,7 +400,7 @@ export default function HomePage() {
         </div>
 
         <div className="flex gap-3 justify-center px-6 py-4 shrink-0" style={{ backgroundColor: "#131314", borderTop: "1px solid rgba(72,72,73,0.15)" }}>
-          <button onClick={() => router.push("/gallery")} className="px-6 py-3 text-sm font-bold tracking-widest uppercase" style={{ backgroundColor: "#8ff5ff", color: "#005d63", fontFamily: "var(--font-space-grotesk)", borderRadius: "8px" }}>갤러리 보기</button>
+          <button onClick={() => router.push("/gallery")} className="px-6 py-3 text-sm font-bold tracking-widest uppercase" style={{ background: "linear-gradient(135deg, #bf81ff, #e879f9, #f472b6)", color: "#fff", fontFamily: "var(--font-space-grotesk)", borderRadius: "8px" }}>갤러리 보기</button>
           <button onClick={() => { setPhase("setup"); setCode(""); setPrompts([]); }} className="px-6 py-3 text-sm font-bold tracking-widest uppercase" style={{ color: "#adaaab", fontFamily: "var(--font-space-grotesk)", border: "1px solid rgba(72,72,73,0.3)", borderRadius: "8px" }}>다시 하기</button>
         </div>
       </div>
@@ -409,8 +414,8 @@ export default function HomePage() {
       <header className="flex items-center justify-between px-6 h-14 shrink-0" style={{ backgroundColor: "#131314", borderBottom: "1px solid rgba(72,72,73,0.15)" }}>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: "rgba(143,245,255,0.1)", border: "1px solid rgba(143,245,255,0.2)" }}>
-              <span className="material-symbols-outlined text-[14px]" style={{ color: "#8ff5ff" }}>person</span>
+            <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: "rgba(191,129,255,0.1)", border: "1px solid rgba(191,129,255,0.25)" }}>
+              <span className="material-symbols-outlined text-[14px]" style={{ color: "#bf81ff" }}>person</span>
             </div>
             <span className="text-sm font-medium" style={{ color: "#fff", fontFamily: "var(--font-space-grotesk)" }}>{nickname}</span>
           </div>
@@ -433,7 +438,7 @@ export default function HomePage() {
           )}
         </div>
 
-        <button onClick={handleFinish} disabled={!code} className="flex items-center gap-2 px-4 py-2 text-xs font-bold tracking-widest uppercase transition-all hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed" style={{ backgroundColor: "#8ff5ff", color: "#005d63", fontFamily: "var(--font-space-grotesk)", borderRadius: "6px" }}>
+        <button onClick={handleFinish} disabled={!code} className="flex items-center gap-2 px-4 py-2 text-xs font-bold tracking-widest uppercase transition-all hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed" style={{ background: "linear-gradient(135deg, #bf81ff, #e879f9)", color: "#fff", fontFamily: "var(--font-space-grotesk)", borderRadius: "6px" }}>
           <span className="material-symbols-outlined text-[16px]">upload</span>
           제출
         </button>
@@ -472,7 +477,7 @@ export default function HomePage() {
               </p>
             )}
             {prompts.map((p, i) => (
-              <div key={i} className="flex gap-2 px-3 py-2 rounded-lg" style={{ backgroundColor: "rgba(143,245,255,0.04)", border: "1px solid rgba(143,245,255,0.08)" }}>
+              <div key={i} className="flex gap-2 px-3 py-2 rounded-lg" style={{ backgroundColor: "rgba(191,129,255,0.05)", border: "1px solid rgba(191,129,255,0.1)" }}>
                 <span className="text-[10px] font-bold shrink-0 mt-0.5" style={{ color: "#8ff5ff", fontFamily: "var(--font-space-grotesk)" }}>#{i + 1}</span>
                 <p className="text-xs leading-relaxed" style={{ color: "#adaaab", fontFamily: "var(--font-inter)" }}>{p}</p>
               </div>
@@ -492,13 +497,13 @@ export default function HomePage() {
                 <div
                   className="inline-block px-5 py-2.5 rounded-lg"
                   style={{
-                    backgroundColor: "rgba(143,245,255,0.08)",
-                    border: "1px solid rgba(143,245,255,0.2)",
+                    backgroundColor: "rgba(191,129,255,0.08)",
+                    border: "1px solid rgba(191,129,255,0.2)",
                     animation: showFlip ? "dingco-flip-in 0.8s ease-out forwards" : "none",
                     transformOrigin: "center center",
                   }}
                 >
-                  <p className="text-sm font-medium" style={{ color: "#8ff5ff", fontFamily: "var(--font-inter)" }}>&quot;{currentPrompt}&quot;</p>
+                  <p className="text-sm font-medium" style={{ color: "#bf81ff", fontFamily: "var(--font-inter)" }}>&quot;{currentPrompt}&quot;</p>
                 </div>
               </div>
             )}
@@ -506,8 +511,8 @@ export default function HomePage() {
             {/* Generating spinner */}
             {subPhase === "generating" && (
               <div className="flex flex-col items-center gap-3 py-6">
-                <div className="w-8 h-8 rounded-full" style={{ border: "2px solid rgba(143,245,255,0.3)", borderTopColor: "#8ff5ff", animation: "dingco-spin 0.8s linear infinite" }} />
-                <span className="text-xs" style={{ color: "#8ff5ff", fontFamily: "var(--font-inter)" }}>결과를 생성중입니다.</span>
+                <div className="w-8 h-8 rounded-full" style={{ border: "2px solid rgba(191,129,255,0.3)", borderTopColor: "#bf81ff", animation: "dingco-spin 0.8s linear infinite" }} />
+                <span className="text-xs" style={{ color: "#bf81ff", fontFamily: "var(--font-inter)" }}>결과를 생성중입니다.</span>
               </div>
             )}
           </div>
@@ -521,9 +526,9 @@ export default function HomePage() {
                   onClick={handleStartVoice}
                   disabled={!canContinue}
                   className="w-14 h-14 rounded-full flex items-center justify-center transition-all hover:scale-105 disabled:opacity-30 disabled:cursor-not-allowed"
-                  style={{ backgroundColor: "rgba(143,245,255,0.1)", border: "2px solid rgba(143,245,255,0.3)", boxShadow: "0 0 30px rgba(143,245,255,0.1)" }}
+                  style={{ backgroundColor: "rgba(191,129,255,0.1)", border: "2px solid rgba(191,129,255,0.3)", boxShadow: "0 0 30px rgba(191,129,255,0.15)" }}
                 >
-                  <span className="material-symbols-outlined text-[24px]" style={{ color: "#8ff5ff" }}>mic</span>
+                  <span className="material-symbols-outlined text-[24px]" style={{ color: "#bf81ff" }}>mic</span>
                 </button>
                 <span className="text-[10px]" style={{ color: "#484849", fontFamily: "var(--font-inter)" }}>
                   {canContinue ? "발화 시작" : "제한에 도달했습니다"}
@@ -541,7 +546,7 @@ export default function HomePage() {
                       style={{
                         width: `${44 + i * 14}px`,
                         height: `${44 + i * 14}px`,
-                        border: "1px solid rgba(143,245,255,0.3)",
+                        border: "1px solid rgba(191,129,255,0.3)",
                         animation: `dingco-pulse-ring ${1.5 + i * 0.3}s ease-in-out infinite`,
                         animationDelay: `${i * 0.2}s`,
                       }}
@@ -557,7 +562,7 @@ export default function HomePage() {
                 <button
                   onClick={handleConfirmInput}
                   className="px-5 py-2 text-xs font-bold tracking-widest uppercase transition-all hover:opacity-90"
-                  style={{ backgroundColor: "#8ff5ff", color: "#005d63", fontFamily: "var(--font-space-grotesk)", borderRadius: "8px" }}
+                  style={{ background: "linear-gradient(135deg, #bf81ff, #e879f9)", color: "#fff", fontFamily: "var(--font-space-grotesk)", borderRadius: "8px" }}
                 >
                   입력
                 </button>
@@ -567,11 +572,11 @@ export default function HomePage() {
             {subPhase === "showing" && (
               <div className="flex gap-3">
                 {canContinue ? (
-                  <button onClick={handleNextRound} className="px-5 py-2.5 text-xs font-bold tracking-widest uppercase" style={{ color: "#8ff5ff", fontFamily: "var(--font-space-grotesk)", border: "1px solid rgba(143,245,255,0.2)", borderRadius: "8px", backgroundColor: "rgba(143,245,255,0.05)" }}>
+                  <button onClick={handleNextRound} className="px-5 py-2.5 text-xs font-bold tracking-widest uppercase" style={{ color: "#bf81ff", fontFamily: "var(--font-space-grotesk)", border: "1px solid rgba(191,129,255,0.25)", borderRadius: "8px", backgroundColor: "rgba(191,129,255,0.06)" }}>
                     다시 말하기
                   </button>
                 ) : (
-                  <button onClick={handleFinish} className="px-5 py-2.5 text-xs font-bold tracking-widest uppercase" style={{ backgroundColor: "#8ff5ff", color: "#005d63", fontFamily: "var(--font-space-grotesk)", borderRadius: "8px" }}>
+                  <button onClick={handleFinish} className="px-5 py-2.5 text-xs font-bold tracking-widest uppercase" style={{ background: "linear-gradient(135deg, #bf81ff, #e879f9)", color: "#fff", fontFamily: "var(--font-space-grotesk)", borderRadius: "8px" }}>
                     최종 제출
                   </button>
                 )}

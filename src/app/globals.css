@@ -10,6 +10,11 @@
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
+  --color-ai-purple: var(--ai-purple);
+  --color-ai-violet: var(--ai-violet);
+  --color-ai-pink: var(--ai-pink);
+  --color-ai-fuchsia: var(--ai-fuchsia);
+  --color-ai-cyan: var(--ai-cyan);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -49,6 +54,13 @@
 }
 
 :root {
+  /* AI Point Colors */
+  --ai-purple: #bf81ff;
+  --ai-violet: #9f5eff;
+  --ai-pink: #f472b6;
+  --ai-fuchsia: #e879f9;
+  --ai-cyan: #8ff5ff;
+
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -139,7 +151,30 @@
 }
 
 .neon-glow-secondary {
-  text-shadow: 0 0 12px rgba(191, 129, 255, 0.6);
+  text-shadow: 0 0 16px rgba(191, 129, 255, 0.7);
+}
+
+.neon-glow-pink {
+  text-shadow: 0 0 14px rgba(244, 114, 182, 0.65);
+}
+
+.ai-gradient-text {
+  background: linear-gradient(135deg, #bf81ff 0%, #e879f9 50%, #f472b6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.ai-gradient-bg {
+  background: linear-gradient(135deg, #bf81ff 0%, #e879f9 50%, #f472b6 100%);
+}
+
+.ai-glow-purple {
+  box-shadow: 0 0 30px rgba(191, 129, 255, 0.3);
+}
+
+.ai-glow-pink {
+  box-shadow: 0 0 30px rgba(244, 114, 182, 0.3);
 }
 
 .subtle-scroll::-webkit-scrollbar {

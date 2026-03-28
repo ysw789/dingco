@@ -85,8 +85,8 @@ export default function GalleryPage() {
               className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold tracking-wider uppercase transition-all"
               style={{
                 fontFamily: "var(--font-space-grotesk)",
-                color: tab === t.key ? "#005d63" : "#767576",
-                backgroundColor: tab === t.key ? "#8ff5ff" : "transparent",
+                color: tab === t.key ? "#fff" : "#767576",
+                background: tab === t.key ? "linear-gradient(135deg, #bf81ff, #e879f9)" : "transparent",
                 borderRadius: "6px",
               }}
             >
@@ -108,7 +108,7 @@ export default function GalleryPage() {
               <button
                 key={f} onClick={() => setFilter(f)}
                 className="px-4 py-1.5 text-xs font-bold tracking-widest uppercase transition-all"
-                style={{ fontFamily: "var(--font-space-grotesk)", color: filter === f ? "#005d63" : "#767576", backgroundColor: filter === f ? "#8ff5ff" : "transparent", border: filter === f ? "none" : "1px solid rgba(72,72,73,0.2)", borderRadius: "6px" }}
+                style={{ fontFamily: "var(--font-space-grotesk)", color: filter === f ? "#fff" : "#767576", background: filter === f ? "linear-gradient(135deg, #bf81ff, #e879f9)" : "transparent", border: filter === f ? "none" : "1px solid rgba(72,72,73,0.2)", borderRadius: "6px" }}
               >
                 {f === "votes" ? "인기순" : "최신순"}
               </button>
@@ -149,7 +149,7 @@ export default function GalleryPage() {
                         {(entry.user_prompts || []).length > 0 ? (
                           entry.user_prompts.map((p, i) => (
                             <p key={i} className="text-[11px] leading-relaxed mb-1" style={{ color: "#adaaab", fontFamily: "var(--font-inter)" }}>
-                              <span style={{ color: "#8ff5ff" }}>#{i + 1}</span> {p}
+                              <span style={{ color: "#bf81ff" }}>#{i + 1}</span> {p}
                             </p>
                           ))
                         ) : entry.transcript ? (
@@ -168,8 +168,8 @@ export default function GalleryPage() {
                     <div className="flex items-center justify-between px-4 py-3" style={{ borderTop: "1px solid rgba(72,72,73,0.1)" }}>
                       <div className="flex items-center gap-3">
                         <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ backgroundColor: "rgba(143,245,255,0.1)", border: "1px solid rgba(143,245,255,0.15)" }}>
-                            <span className="material-symbols-outlined text-[12px]" style={{ color: "#8ff5ff" }}>person</span>
+                          <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ backgroundColor: "rgba(191,129,255,0.1)", border: "1px solid rgba(191,129,255,0.2)" }}>
+                            <span className="material-symbols-outlined text-[12px]" style={{ color: "#bf81ff" }}>person</span>
                           </div>
                           <span className="text-sm font-medium" style={{ color: "#fff", fontFamily: "var(--font-space-grotesk)" }}>{entry.nickname}</span>
                         </div>
