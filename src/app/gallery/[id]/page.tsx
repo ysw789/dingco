@@ -65,9 +65,9 @@ export default function SubmissionDetailPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0e0e0f", color: "#fff" }}>
+    <div className="flex flex-col h-screen overflow-hidden" style={{ backgroundColor: "#0e0e0f", color: "#fff" }}>
       {/* Header */}
-      <header className="flex items-center justify-between px-8 h-16 shrink-0 sticky top-0 z-10" style={{ backgroundColor: "#131314", borderBottom: "1px solid rgba(72,72,73,0.15)" }}>
+      <header className="flex items-center justify-between px-6 h-14 shrink-0" style={{ backgroundColor: "#131314", borderBottom: "1px solid rgba(72,72,73,0.15)" }}>
         <button
           onClick={() => router.push("/gallery")}
           className="flex items-center gap-2 transition-colors"
@@ -86,93 +86,91 @@ export default function SubmissionDetailPage() {
             </div>
             <span className="text-sm font-bold" style={{ color: "#fff", fontFamily: "var(--font-space-grotesk)" }}>{entry.nickname}</span>
           </div>
+          <span className="text-xs" style={{ color: "#484849", fontFamily: "var(--font-inter)" }}>
+            {new Date(entry.created_at).toLocaleDateString("ko-KR")}
+          </span>
         </div>
 
-        <div style={{ width: 70 }} />
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleShare}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs transition-all hover:opacity-80"
+            style={{ color: "#767576", borderRadius: "6px", border: "1px solid rgba(72,72,73,0.2)" }}
+          >
+            <span className="material-symbols-outlined text-[14px]">share</span>
+            공유
+          </button>
+          <span className="text-sm tabular-nums font-bold" style={{ color: "#767576", fontFamily: "var(--font-space-grotesk)" }}>{entry.vote_count}</span>
+          <button
+            onClick={handleVote}
+            className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold tracking-wider uppercase transition-all hover:opacity-90"
+            style={{
+              backgroundColor: entry.voted_by_me ? "rgba(255,107,157,0.1)" : "#ff6b9d",
+              color: entry.voted_by_me ? "#ff6b9d" : "#fff",
+              fontFamily: "var(--font-space-grotesk)",
+              borderRadius: "6px",
+              border: entry.voted_by_me ? "1px solid rgba(255,107,157,0.3)" : "none",
+            }}
+          >
+            {entry.voted_by_me ? (
+              <><span className="material-symbols-outlined text-[14px]">check</span>킹받음</>
+            ) : (
+              <><span className="material-symbols-outlined text-[14px]">local_fire_department</span>킹받아요</>
+            )}
+          </button>
+        </div>
       </header>
 
-      {/* Content */}
-      <main className="flex-1 p-8 max-w-5xl mx-auto w-full">
-        <div className="rounded-xl overflow-hidden" style={{ backgroundColor: "#131314", border: "1px solid rgba(72,72,73,0.15)" }}>
-          {/* 3-column: Example | Input | Result */}
-          <div className="grid grid-cols-3 gap-0" style={{ height: 420 }}>
-            {/* Example */}
-            <div className="flex items-center justify-center" style={{ backgroundColor: "#0a0a0b", borderRight: "1px solid rgba(72,72,73,0.1)" }}>
-              {entry.example_html ? (
-                <iframe srcDoc={entry.example_html} className="w-full h-full border-0 pointer-events-none" sandbox="" title="예제" />
-              ) : (
-                <div className="text-center">
-                  <span className="material-symbols-outlined text-3xl" style={{ color: "#262627" }}>image</span>
-                  <p className="text-[10px] mt-1" style={{ color: "#333" }}>예제 없음</p>
-                </div>
-              )}
-            </div>
-
-            {/* User Prompts */}
-            <div className="p-5 overflow-auto" style={{ borderRight: "1px solid rgba(72,72,73,0.1)" }}>
-              <span className="text-[10px] tracking-widest uppercase block mb-3" style={{ color: "#484849", fontFamily: "var(--font-space-grotesk)" }}>사용자 입력</span>
-              {(entry.user_prompts || []).length > 0 ? (
-                entry.user_prompts.map((p, i) => (
-                  <p key={i} className="text-[12px] leading-relaxed mb-2" style={{ color: "#adaaab", fontFamily: "var(--font-inter)" }}>
-                    <span style={{ color: "#8ff5ff" }}>#{i + 1}</span> {p}
-                  </p>
-                ))
-              ) : entry.transcript ? (
-                <p className="text-[12px] leading-relaxed" style={{ color: "#adaaab", fontFamily: "var(--font-inter)" }}>{entry.transcript}</p>
-              ) : (
-                <p className="text-[12px]" style={{ color: "#333" }}>-</p>
-              )}
-            </div>
-
-            {/* AI Result */}
-            <div className="overflow-hidden" style={{ backgroundColor: "#0a0a0b" }}>
-              <iframe srcDoc={entry.html_code} className="w-full h-full border-0 pointer-events-none" sandbox="allow-scripts" title={`${entry.nickname}의 작품`} />
-            </div>
+      {/* 3-column full-screen layout */}
+      <div className="flex-1 grid grid-cols-3 gap-0 overflow-hidden">
+        {/* LEFT: Example */}
+        <div className="flex flex-col overflow-hidden" style={{ borderRight: "1px solid rgba(72,72,73,0.15)" }}>
+          <div className="px-4 py-2 shrink-0" style={{ borderBottom: "1px solid rgba(72,72,73,0.1)" }}>
+            <span className="text-[10px] tracking-widest uppercase" style={{ color: "#484849", fontFamily: "var(--font-space-grotesk)" }}>예제</span>
           </div>
-
-          {/* Footer */}
-          <div className="flex items-center justify-between px-6 py-4" style={{ borderTop: "1px solid rgba(72,72,73,0.1)" }}>
-            <div className="flex items-center gap-2">
-              <span className="text-xs" style={{ color: "#484849", fontFamily: "var(--font-inter)" }}>
-                {new Date(entry.created_at).toLocaleDateString("ko-KR")}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <button
-                onClick={handleShare}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs transition-all hover:opacity-80"
-                style={{ color: "#767576", borderRadius: "6px", border: "1px solid rgba(72,72,73,0.2)" }}
-              >
-                <span className="material-symbols-outlined text-[14px]">share</span>
-                공유
-              </button>
-
-              <div className="flex items-center gap-1.5">
-                <span className="text-sm tabular-nums font-bold" style={{ color: "#767576", fontFamily: "var(--font-space-grotesk)" }}>{entry.vote_count}</span>
+          <div className="flex-1 flex items-center justify-center" style={{ backgroundColor: "#0a0a0b" }}>
+            {entry.example_html ? (
+              <iframe srcDoc={entry.example_html} className="w-full h-full border-0 pointer-events-none" sandbox="" title="예제" />
+            ) : (
+              <div className="text-center space-y-2">
+                <span className="material-symbols-outlined text-4xl" style={{ color: "#262627" }}>image</span>
+                <p className="text-xs" style={{ color: "#484849" }}>예제 없음</p>
               </div>
-
-              <button
-                onClick={handleVote}
-                className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold tracking-wider uppercase transition-all hover:opacity-90"
-                style={{
-                  backgroundColor: entry.voted_by_me ? "rgba(255,107,157,0.1)" : "#ff6b9d",
-                  color: entry.voted_by_me ? "#ff6b9d" : "#fff",
-                  fontFamily: "var(--font-space-grotesk)",
-                  borderRadius: "8px",
-                  border: entry.voted_by_me ? "1px solid rgba(255,107,157,0.3)" : "none",
-                }}
-              >
-                {entry.voted_by_me ? (
-                  <><span className="material-symbols-outlined text-[14px]">check</span>킹받음</>
-                ) : (
-                  <><span className="material-symbols-outlined text-[14px]">local_fire_department</span>킹받아요</>
-                )}
-              </button>
-            </div>
+            )}
           </div>
         </div>
-      </main>
+
+        {/* CENTER: Prompts */}
+        <div className="flex flex-col overflow-hidden" style={{ borderRight: "1px solid rgba(72,72,73,0.15)" }}>
+          <div className="px-4 py-2 shrink-0" style={{ borderBottom: "1px solid rgba(72,72,73,0.1)" }}>
+            <span className="text-[10px] tracking-widest uppercase" style={{ color: "#484849", fontFamily: "var(--font-space-grotesk)" }}>프롬프트</span>
+          </div>
+          <div className="flex-1 overflow-auto p-4 space-y-2">
+            {(entry.user_prompts || []).length > 0 ? (
+              entry.user_prompts.map((p, i) => (
+                <div key={i} className="flex gap-2 px-3 py-2 rounded-lg" style={{ backgroundColor: "rgba(143,245,255,0.04)", border: "1px solid rgba(143,245,255,0.08)" }}>
+                  <span className="text-[10px] font-bold shrink-0 mt-0.5" style={{ color: "#8ff5ff", fontFamily: "var(--font-space-grotesk)" }}>#{i + 1}</span>
+                  <p className="text-xs leading-relaxed" style={{ color: "#adaaab", fontFamily: "var(--font-inter)" }}>{p}</p>
+                </div>
+              ))
+            ) : entry.transcript ? (
+              <p className="text-xs leading-relaxed px-3" style={{ color: "#adaaab", fontFamily: "var(--font-inter)" }}>{entry.transcript}</p>
+            ) : (
+              <p className="text-xs px-3" style={{ color: "#484849" }}>-</p>
+            )}
+          </div>
+        </div>
+
+        {/* RIGHT: Result */}
+        <div className="flex flex-col overflow-hidden">
+          <div className="px-4 py-2 shrink-0" style={{ borderBottom: "1px solid rgba(72,72,73,0.1)" }}>
+            <span className="text-[10px] tracking-widest uppercase" style={{ color: "#484849", fontFamily: "var(--font-space-grotesk)" }}>결과</span>
+          </div>
+          <div className="flex-1" style={{ backgroundColor: "#0a0a0b" }}>
+            <iframe srcDoc={entry.html_code} className="w-full h-full border-0" sandbox="allow-scripts" title={`${entry.nickname}의 작품`} />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

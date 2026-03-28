@@ -67,6 +67,8 @@ export default function HomePage() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
+  const codeRef = useRef(code);
+  codeRef.current = code;
 
   useEffect(() => { injectKeyframes(); }, []);
 
@@ -209,7 +211,7 @@ export default function HomePage() {
   /* ── Submit ── */
   const handleAutoSubmit = () => {
     stopRecording();
-    if (code) submitToGallery();
+    if (codeRef.current) submitToGallery();
     else setPhase("result");
   };
 
@@ -437,92 +439,58 @@ export default function HomePage() {
         </button>
       </header>
 
-      {/* Main content */}
-      <div className="flex-1 overflow-auto p-6">
-        <div className="max-w-4xl mx-auto space-y-6">
-          {/* Example Image */}
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-full max-w-md aspect-video rounded-lg overflow-hidden flex items-center justify-center" style={{ backgroundColor: "#131314", border: "1px solid rgba(72,72,73,0.15)" }}>
-              {exampleImage ? (
-                <iframe srcDoc={exampleImage.html_code} className="w-full h-full border-0 pointer-events-none" sandbox="" title="예제" />
-              ) : (
-                <div className="text-center space-y-2">
-                  <span className="material-symbols-outlined text-4xl" style={{ color: "#262627" }}>image</span>
-                  <p className="text-xs" style={{ color: "#484849" }}>예제 이미지 없음</p>
-                </div>
-              )}
-            </div>
-            <p className="text-xs text-center" style={{ color: "#767576", fontFamily: "var(--font-inter)" }}>
-              청개구리 같은 AI를 잘 설득해서 위 이미지와 최대한 비슷하게 만들어보세요.
-            </p>
+      {/* Main content — 3-column full-screen layout */}
+      <div className="flex-1 grid grid-cols-3 gap-0 overflow-hidden">
+        {/* ── LEFT: Example ── */}
+        <div className="flex flex-col overflow-hidden" style={{ borderRight: "1px solid rgba(72,72,73,0.15)" }}>
+          <div className="px-4 py-2 shrink-0" style={{ borderBottom: "1px solid rgba(72,72,73,0.1)" }}>
+            <span className="text-[10px] tracking-widest uppercase" style={{ color: "#484849", fontFamily: "var(--font-space-grotesk)" }}>예제</span>
+          </div>
+          <div className="flex-1 flex items-center justify-center" style={{ backgroundColor: "#0a0a0b" }}>
+            {exampleImage ? (
+              <iframe srcDoc={exampleImage.html_code} className="w-full h-full border-0 pointer-events-none" sandbox="" title="예제" />
+            ) : (
+              <div className="text-center space-y-2">
+                <span className="material-symbols-outlined text-4xl" style={{ color: "#262627" }}>image</span>
+                <p className="text-xs" style={{ color: "#484849" }}>예제 없음</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ── CENTER: Prompts + Voice Input ── */}
+        <div className="flex flex-col overflow-hidden" style={{ borderRight: "1px solid rgba(72,72,73,0.15)" }}>
+          <div className="px-4 py-2 shrink-0" style={{ borderBottom: "1px solid rgba(72,72,73,0.1)" }}>
+            <span className="text-[10px] tracking-widest uppercase" style={{ color: "#484849", fontFamily: "var(--font-space-grotesk)" }}>프롬프트</span>
           </div>
 
-          {/* Voice Input Section */}
-          <div className="flex flex-col items-center gap-4 p-6 rounded-xl" style={{ backgroundColor: "#131314", border: "1px solid rgba(72,72,73,0.15)" }}>
-            {subPhase === "idle" && (
-              <>
-                {micError && <p className="text-xs" style={{ color: "#ff4d4d", fontFamily: "var(--font-inter)" }}>{micError}</p>}
-                <button
-                  onClick={handleStartVoice}
-                  disabled={!canContinue}
-                  className="w-16 h-16 rounded-full flex items-center justify-center transition-all hover:scale-105 disabled:opacity-30 disabled:cursor-not-allowed"
-                  style={{ backgroundColor: "rgba(143,245,255,0.1)", border: "2px solid rgba(143,245,255,0.3)", boxShadow: "0 0 30px rgba(143,245,255,0.1)" }}
-                >
-                  <span className="material-symbols-outlined text-[28px]" style={{ color: "#8ff5ff" }}>mic</span>
-                </button>
-                <span className="text-xs" style={{ color: "#484849", fontFamily: "var(--font-inter)" }}>
-                  {canContinue ? "발화 시작" : "제한에 도달했습니다"}
-                </span>
-              </>
+          {/* Prompt history */}
+          <div className="flex-1 overflow-auto p-4 space-y-2">
+            {prompts.length === 0 && subPhase === "idle" && (
+              <p className="text-xs text-center mt-8" style={{ color: "#484849", fontFamily: "var(--font-inter)" }}>
+                청개구리 같은 AI를 설득해서<br />예제와 비슷한 화면을 만들어보세요
+              </p>
+            )}
+            {prompts.map((p, i) => (
+              <div key={i} className="flex gap-2 px-3 py-2 rounded-lg" style={{ backgroundColor: "rgba(143,245,255,0.04)", border: "1px solid rgba(143,245,255,0.08)" }}>
+                <span className="text-[10px] font-bold shrink-0 mt-0.5" style={{ color: "#8ff5ff", fontFamily: "var(--font-space-grotesk)" }}>#{i + 1}</span>
+                <p className="text-xs leading-relaxed" style={{ color: "#adaaab", fontFamily: "var(--font-inter)" }}>{p}</p>
+              </div>
+            ))}
+
+            {/* Live transcript while recording */}
+            {subPhase === "recording" && displayTranscript && (
+              <div className="flex gap-2 px-3 py-2 rounded-lg" style={{ backgroundColor: "rgba(255,77,77,0.04)", border: "1px dashed rgba(255,77,77,0.2)" }}>
+                <span className="text-[10px] font-bold shrink-0 mt-0.5" style={{ color: "#ff4d4d", fontFamily: "var(--font-space-grotesk)" }}>...</span>
+                <p className="text-xs leading-relaxed" style={{ color: "#adaaab", fontFamily: "var(--font-inter)" }}>{displayTranscript}</p>
+              </div>
             )}
 
-            {subPhase === "recording" && (
-              <>
-                {/* Voice animation — concentric pulsing rings */}
-                <div className="relative w-20 h-20 flex items-center justify-center">
-                  {[0, 1, 2].map((i) => (
-                    <div
-                      key={i}
-                      className="absolute rounded-full"
-                      style={{
-                        width: `${60 + i * 20}px`,
-                        height: `${60 + i * 20}px`,
-                        border: "1px solid rgba(143,245,255,0.3)",
-                        animation: `dingco-pulse-ring ${1.5 + i * 0.3}s ease-in-out infinite`,
-                        animationDelay: `${i * 0.2}s`,
-                      }}
-                    />
-                  ))}
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: "rgba(255,77,77,0.15)", border: "2px solid rgba(255,77,77,0.4)" }}>
-                    <span className="material-symbols-outlined text-[24px] animate-pulse" style={{ color: "#ff4d4d" }}>mic</span>
-                  </div>
-                </div>
-
-                {/* Real-time transcript */}
-                <div className="w-full text-center min-h-[40px]">
-                  {displayTranscript ? (
-                    <p className="text-sm leading-relaxed" style={{ color: "#adaaab", fontFamily: "var(--font-inter)" }}>
-                      &quot;{displayTranscript}&quot;
-                    </p>
-                  ) : (
-                    <p className="text-xs" style={{ color: "#484849", fontFamily: "var(--font-inter)" }}>말씀하세요...</p>
-                  )}
-                </div>
-
-                <button
-                  onClick={handleConfirmInput}
-                  className="px-6 py-2.5 text-xs font-bold tracking-widest uppercase transition-all hover:opacity-90"
-                  style={{ backgroundColor: "#8ff5ff", color: "#005d63", fontFamily: "var(--font-space-grotesk)", borderRadius: "8px" }}
-                >
-                  입력
-                </button>
-              </>
-            )}
-
+            {/* Confirming animation */}
             {subPhase === "confirming" && (
-              <div className="w-full text-center py-4" style={{ perspective: "600px" }}>
+              <div className="text-center py-4" style={{ perspective: "600px" }}>
                 <div
-                  className="inline-block px-6 py-3 rounded-lg"
+                  className="inline-block px-5 py-2.5 rounded-lg"
                   style={{
                     backgroundColor: "rgba(143,245,255,0.08)",
                     border: "1px solid rgba(143,245,255,0.2)",
@@ -535,46 +503,96 @@ export default function HomePage() {
               </div>
             )}
 
+            {/* Generating spinner */}
             {subPhase === "generating" && (
-              <div className="flex flex-col items-center gap-3 py-4">
+              <div className="flex flex-col items-center gap-3 py-6">
                 <div className="w-8 h-8 rounded-full" style={{ border: "2px solid rgba(143,245,255,0.3)", borderTopColor: "#8ff5ff", animation: "dingco-spin 0.8s linear infinite" }} />
                 <span className="text-xs" style={{ color: "#8ff5ff", fontFamily: "var(--font-inter)" }}>결과를 생성중입니다.</span>
               </div>
             )}
+          </div>
 
-            {subPhase === "showing" && (
-              <div className="w-full space-y-4" style={{ animation: "dingco-fade-up 0.5s ease-out" }}>
-                {/* 3-column result */}
-                <div className="grid grid-cols-3 gap-3" style={{ height: 350 }}>
-                  <div className="rounded-lg overflow-hidden flex items-center justify-center" style={{ backgroundColor: "#0a0a0b", border: "1px solid rgba(72,72,73,0.15)" }}>
-                    {exampleImage ? (
-                      <iframe srcDoc={exampleImage.html_code} className="w-full h-full border-0 pointer-events-none" sandbox="" title="예제" />
-                    ) : <span className="material-symbols-outlined" style={{ color: "#262627" }}>image</span>}
-                  </div>
-                  <div className="rounded-lg overflow-auto p-3" style={{ backgroundColor: "#0a0a0b", border: "1px solid rgba(72,72,73,0.15)" }}>
-                    <span className="text-[9px] tracking-widest uppercase block mb-2" style={{ color: "#484849", fontFamily: "var(--font-space-grotesk)" }}>사용자 입력</span>
-                    {prompts.map((p, i) => (
-                      <p key={i} className="text-[11px] leading-relaxed mb-1" style={{ color: "#adaaab", fontFamily: "var(--font-inter)" }}>
-                        <span style={{ color: "#8ff5ff" }}>#{i + 1}</span> {p}
-                      </p>
-                    ))}
-                  </div>
-                  <div className="rounded-lg overflow-hidden" style={{ backgroundColor: "#0a0a0b", border: "1px solid rgba(72,72,73,0.15)" }}>
-                    {code && <iframe srcDoc={code} className="w-full border-0" style={{ height: "100%", minHeight: 280 }} sandbox="allow-scripts" title="result" />}
+          {/* Bottom voice controls */}
+          <div className="shrink-0 flex flex-col items-center gap-3 px-4 py-4" style={{ borderTop: "1px solid rgba(72,72,73,0.1)", backgroundColor: "#131314" }}>
+            {subPhase === "idle" && (
+              <>
+                {micError && <p className="text-xs" style={{ color: "#ff4d4d", fontFamily: "var(--font-inter)" }}>{micError}</p>}
+                <button
+                  onClick={handleStartVoice}
+                  disabled={!canContinue}
+                  className="w-14 h-14 rounded-full flex items-center justify-center transition-all hover:scale-105 disabled:opacity-30 disabled:cursor-not-allowed"
+                  style={{ backgroundColor: "rgba(143,245,255,0.1)", border: "2px solid rgba(143,245,255,0.3)", boxShadow: "0 0 30px rgba(143,245,255,0.1)" }}
+                >
+                  <span className="material-symbols-outlined text-[24px]" style={{ color: "#8ff5ff" }}>mic</span>
+                </button>
+                <span className="text-[10px]" style={{ color: "#484849", fontFamily: "var(--font-inter)" }}>
+                  {canContinue ? "발화 시작" : "제한에 도달했습니다"}
+                </span>
+              </>
+            )}
+
+            {subPhase === "recording" && (
+              <>
+                <div className="relative w-14 h-14 flex items-center justify-center">
+                  {[0, 1, 2].map((i) => (
+                    <div
+                      key={i}
+                      className="absolute rounded-full"
+                      style={{
+                        width: `${44 + i * 14}px`,
+                        height: `${44 + i * 14}px`,
+                        border: "1px solid rgba(143,245,255,0.3)",
+                        animation: `dingco-pulse-ring ${1.5 + i * 0.3}s ease-in-out infinite`,
+                        animationDelay: `${i * 0.2}s`,
+                      }}
+                    />
+                  ))}
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: "rgba(255,77,77,0.15)", border: "2px solid rgba(255,77,77,0.4)" }}>
+                    <span className="material-symbols-outlined text-[20px] animate-pulse" style={{ color: "#ff4d4d" }}>mic</span>
                   </div>
                 </div>
+                {!displayTranscript && (
+                  <p className="text-[10px]" style={{ color: "#484849", fontFamily: "var(--font-inter)" }}>말씀하세요...</p>
+                )}
+                <button
+                  onClick={handleConfirmInput}
+                  className="px-5 py-2 text-xs font-bold tracking-widest uppercase transition-all hover:opacity-90"
+                  style={{ backgroundColor: "#8ff5ff", color: "#005d63", fontFamily: "var(--font-space-grotesk)", borderRadius: "8px" }}
+                >
+                  입력
+                </button>
+              </>
+            )}
 
-                {/* Actions */}
-                <div className="flex justify-center gap-3">
-                  {canContinue ? (
-                    <button onClick={handleNextRound} className="px-5 py-2.5 text-xs font-bold tracking-widest uppercase" style={{ color: "#8ff5ff", fontFamily: "var(--font-space-grotesk)", border: "1px solid rgba(143,245,255,0.2)", borderRadius: "8px", backgroundColor: "rgba(143,245,255,0.05)" }}>
-                      다시 말하기
-                    </button>
-                  ) : (
-                    <button onClick={handleFinish} className="px-5 py-2.5 text-xs font-bold tracking-widest uppercase" style={{ backgroundColor: "#8ff5ff", color: "#005d63", fontFamily: "var(--font-space-grotesk)", borderRadius: "8px" }}>
-                      최종 제출
-                    </button>
-                  )}
+            {subPhase === "showing" && (
+              <div className="flex gap-3">
+                {canContinue ? (
+                  <button onClick={handleNextRound} className="px-5 py-2.5 text-xs font-bold tracking-widest uppercase" style={{ color: "#8ff5ff", fontFamily: "var(--font-space-grotesk)", border: "1px solid rgba(143,245,255,0.2)", borderRadius: "8px", backgroundColor: "rgba(143,245,255,0.05)" }}>
+                    다시 말하기
+                  </button>
+                ) : (
+                  <button onClick={handleFinish} className="px-5 py-2.5 text-xs font-bold tracking-widest uppercase" style={{ backgroundColor: "#8ff5ff", color: "#005d63", fontFamily: "var(--font-space-grotesk)", borderRadius: "8px" }}>
+                    최종 제출
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ── RIGHT: HTML Preview ── */}
+        <div className="flex flex-col overflow-hidden">
+          <div className="px-4 py-2 shrink-0" style={{ borderBottom: "1px solid rgba(72,72,73,0.1)" }}>
+            <span className="text-[10px] tracking-widest uppercase" style={{ color: "#484849", fontFamily: "var(--font-space-grotesk)" }}>결과</span>
+          </div>
+          <div className="flex-1" style={{ backgroundColor: "#0a0a0b" }}>
+            {code ? (
+              <iframe srcDoc={code} className="w-full h-full border-0" sandbox="allow-scripts" title="result" />
+            ) : (
+              <div className="flex h-full items-center justify-center">
+                <div className="text-center space-y-2">
+                  <span className="material-symbols-outlined text-4xl" style={{ color: "#262627" }}>web</span>
+                  <p className="text-xs" style={{ color: "#484849", fontFamily: "var(--font-inter)" }}>결과가 여기에 표시됩니다</p>
                 </div>
               </div>
             )}
