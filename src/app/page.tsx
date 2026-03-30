@@ -33,6 +33,11 @@ function injectKeyframes() {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+    @keyframes dingco-check-pop {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
   `;
   document.head.appendChild(style);
 }
@@ -45,6 +50,7 @@ export default function HomePage() {
 
   /* ── Phase state ── */
   const [phase, setPhase] = useState<Phase>("setup");
+  const [submitting, setSubmitting] = useState<"idle" | "submitting" | "done">("idle");
 
   /* ── Setup state ── */
   const [nickname, setNickname] = useState("");
@@ -217,6 +223,7 @@ export default function HomePage() {
   };
 
   const submitToGallery = async () => {
+    setSubmitting("submitting");
     try {
       await fetch("/api/submissions", {
         method: "POST",
@@ -232,7 +239,11 @@ export default function HomePage() {
         }),
       });
     } catch { /* ok */ }
-    setPhase("result");
+    setSubmitting("done");
+    setTimeout(() => {
+      setSubmitting("idle");
+      setPhase("result");
+    }, 800);
   };
 
   const handleFinish = () => {
@@ -349,59 +360,67 @@ export default function HomePage() {
   /* ═════════════════════ RESULT PHASE ═════════════════════ */
   if (phase === "result") {
     return (
-      <div className="flex flex-col h-screen" style={{ backgroundColor: "#0e0e0f", color: "#fff" }}>
-        <header className="flex items-center justify-center px-6 h-14 shrink-0" style={{ backgroundColor: "#131314", borderBottom: "1px solid rgba(72,72,73,0.15)" }}>
+      <div className="flex flex-col h-screen overflow-hidden" style={{ backgroundColor: "#0e0e0f", color: "#fff" }}>
+        {/* Header */}
+        <header className="flex items-center justify-between px-6 h-14 shrink-0" style={{ backgroundColor: "#131314", borderBottom: "1px solid rgba(72,72,73,0.15)" }}>
           <h2 className="text-sm font-bold tracking-widest uppercase ai-gradient-text" style={{ fontFamily: "var(--font-space-grotesk)" }}>제출 완료</h2>
+          <div className="flex gap-3">
+            <button onClick={() => router.push("/gallery")} className="px-4 py-2 text-xs font-bold tracking-widest uppercase" style={{ background: "linear-gradient(135deg, #bf81ff, #e879f9, #f472b6)", color: "#fff", fontFamily: "var(--font-space-grotesk)", borderRadius: "6px" }}>갤러리 보기</button>
+            <button onClick={() => { setPhase("setup"); setCode(""); setPrompts([]); }} className="px-4 py-2 text-xs font-bold tracking-widest uppercase" style={{ color: "#adaaab", fontFamily: "var(--font-space-grotesk)", border: "1px solid rgba(72,72,73,0.3)", borderRadius: "6px" }}>다시 하기</button>
+          </div>
         </header>
 
-        <div className="flex-1 overflow-auto p-6">
-          <div className="grid grid-cols-3 gap-4 max-w-5xl mx-auto" style={{ minHeight: "70vh" }}>
-            {/* Example */}
-            <div className="flex flex-col gap-3">
-              <span className="text-[10px] tracking-widest uppercase" style={{ color: "#484849", fontFamily: "var(--font-space-grotesk)" }}>제시된 예제</span>
-              <div className="flex-1 rounded-lg overflow-hidden flex items-center justify-center" style={{ backgroundColor: "#131314", border: "1px solid rgba(72,72,73,0.15)" }}>
-                {exampleImage ? (
-                  <iframe srcDoc={exampleImage.html_code} className="w-full h-full border-0 pointer-events-none" sandbox="" title="예제" />
-                ) : (
-                  <span className="material-symbols-outlined text-3xl" style={{ color: "#262627" }}>image</span>
-                )}
-              </div>
+        {/* 3-column full-screen layout */}
+        <div className="flex-1 grid grid-cols-3 gap-0 overflow-hidden">
+          {/* LEFT: Example */}
+          <div className="flex flex-col overflow-hidden" style={{ borderRight: "1px solid rgba(72,72,73,0.15)" }}>
+            <div className="px-4 py-2 shrink-0" style={{ borderBottom: "1px solid rgba(72,72,73,0.1)" }}>
+              <span className="text-[10px] tracking-widest uppercase" style={{ color: "#484849", fontFamily: "var(--font-space-grotesk)" }}>예제</span>
             </div>
-
-            {/* Prompts */}
-            <div className="flex flex-col gap-3">
-              <span className="text-[10px] tracking-widest uppercase" style={{ color: "#484849", fontFamily: "var(--font-space-grotesk)" }}>사용자 입력</span>
-              <div className="flex-1 rounded-lg overflow-auto p-4 space-y-3" style={{ backgroundColor: "#131314", border: "1px solid rgba(72,72,73,0.15)" }}>
-                {prompts.length === 0 ? (
-                  <p className="text-xs" style={{ color: "#484849", fontFamily: "var(--font-inter)" }}>입력된 프롬프트가 없습니다</p>
-                ) : prompts.map((p, i) => (
-                  <div key={i} className="flex gap-2">
-                    <span className="text-[10px] font-bold shrink-0 mt-0.5" style={{ color: "#bf81ff", fontFamily: "var(--font-space-grotesk)" }}>#{i + 1}</span>
-                    <p className="text-xs leading-relaxed" style={{ color: "#adaaab", fontFamily: "var(--font-inter)" }}>{p}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Result */}
-            <div className="flex flex-col gap-3">
-              <span className="text-[10px] tracking-widest uppercase" style={{ color: "#484849", fontFamily: "var(--font-space-grotesk)" }}>딩코가 생성한 킹받는 결과</span>
-              <div className="flex-1 rounded-lg overflow-hidden" style={{ backgroundColor: "#131314", border: "1px solid rgba(72,72,73,0.15)" }}>
-                {code ? (
-                  <iframe srcDoc={code} className="w-full border-0" style={{ height: "100%", minHeight: 400 }} sandbox="allow-scripts" title="result" />
-                ) : (
-                  <div className="flex h-full items-center justify-center">
-                    <span className="material-symbols-outlined text-3xl" style={{ color: "#262627" }}>web</span>
-                  </div>
-                )}
-              </div>
+            <div className="flex-1 flex items-center justify-center" style={{ backgroundColor: "#0a0a0b" }}>
+              {exampleImage ? (
+                <iframe srcDoc={exampleImage.html_code} className="w-full h-full border-0 pointer-events-none" sandbox="" title="예제" />
+              ) : (
+                <div className="text-center space-y-2">
+                  <span className="material-symbols-outlined text-4xl" style={{ color: "#262627" }}>image</span>
+                  <p className="text-xs" style={{ color: "#484849" }}>예제 없음</p>
+                </div>
+              )}
             </div>
           </div>
-        </div>
 
-        <div className="flex gap-3 justify-center px-6 py-4 shrink-0" style={{ backgroundColor: "#131314", borderTop: "1px solid rgba(72,72,73,0.15)" }}>
-          <button onClick={() => router.push("/gallery")} className="px-6 py-3 text-sm font-bold tracking-widest uppercase" style={{ background: "linear-gradient(135deg, #bf81ff, #e879f9, #f472b6)", color: "#fff", fontFamily: "var(--font-space-grotesk)", borderRadius: "8px" }}>갤러리 보기</button>
-          <button onClick={() => { setPhase("setup"); setCode(""); setPrompts([]); }} className="px-6 py-3 text-sm font-bold tracking-widest uppercase" style={{ color: "#adaaab", fontFamily: "var(--font-space-grotesk)", border: "1px solid rgba(72,72,73,0.3)", borderRadius: "8px" }}>다시 하기</button>
+          {/* CENTER: Prompts */}
+          <div className="flex flex-col overflow-hidden" style={{ borderRight: "1px solid rgba(72,72,73,0.15)" }}>
+            <div className="px-4 py-2 shrink-0" style={{ borderBottom: "1px solid rgba(72,72,73,0.1)" }}>
+              <span className="text-[10px] tracking-widest uppercase" style={{ color: "#484849", fontFamily: "var(--font-space-grotesk)" }}>프롬프트</span>
+            </div>
+            <div className="flex-1 overflow-auto p-4 space-y-2">
+              {prompts.length === 0 ? (
+                <p className="text-xs px-3" style={{ color: "#484849", fontFamily: "var(--font-inter)" }}>입력된 프롬프트가 없습니다</p>
+              ) : prompts.map((p, i) => (
+                <div key={i} className="flex gap-2 px-3 py-2 rounded-lg" style={{ backgroundColor: "rgba(191,129,255,0.05)", border: "1px solid rgba(191,129,255,0.1)" }}>
+                  <span className="text-[10px] font-bold shrink-0 mt-0.5" style={{ color: "#bf81ff", fontFamily: "var(--font-space-grotesk)" }}>#{i + 1}</span>
+                  <p className="text-xs leading-relaxed" style={{ color: "#adaaab", fontFamily: "var(--font-inter)" }}>{p}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* RIGHT: Result */}
+          <div className="flex flex-col overflow-hidden">
+            <div className="px-4 py-2 shrink-0" style={{ borderBottom: "1px solid rgba(72,72,73,0.1)" }}>
+              <span className="text-[10px] tracking-widest uppercase" style={{ color: "#484849", fontFamily: "var(--font-space-grotesk)" }}>결과</span>
+            </div>
+            <div className="flex-1" style={{ backgroundColor: "#0a0a0b" }}>
+              {code ? (
+                <iframe srcDoc={code} className="w-full h-full border-0" sandbox="allow-scripts" title="result" />
+              ) : (
+                <div className="flex h-full items-center justify-center">
+                  <span className="material-symbols-outlined text-3xl" style={{ color: "#262627" }}>web</span>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -604,6 +623,25 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+
+      {/* Submit overlay */}
+      {submitting !== "idle" && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center" style={{ backgroundColor: "rgba(14,14,15,0.92)", backdropFilter: "blur(8px)" }}>
+          {submitting === "submitting" ? (
+            <>
+              <div className="w-12 h-12 rounded-full" style={{ border: "3px solid rgba(191,129,255,0.2)", borderTopColor: "#bf81ff", animation: "dingco-spin 0.8s linear infinite" }} />
+              <p className="mt-5 text-sm font-bold tracking-widest uppercase" style={{ color: "#bf81ff", fontFamily: "var(--font-space-grotesk)" }}>제출 중...</p>
+            </>
+          ) : (
+            <>
+              <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: "linear-gradient(135deg, #bf81ff, #e879f9, #f472b6)", animation: "dingco-check-pop 0.4s ease-out" }}>
+                <span className="material-symbols-outlined text-3xl" style={{ color: "#fff" }}>check</span>
+              </div>
+              <p className="mt-5 text-sm font-bold tracking-widest uppercase" style={{ color: "#fff", fontFamily: "var(--font-space-grotesk)" }}>제출 완료!</p>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }
